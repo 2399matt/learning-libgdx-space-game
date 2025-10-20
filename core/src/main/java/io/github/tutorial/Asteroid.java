@@ -10,9 +10,12 @@ public class Asteroid {
 
     public Sprite sprite;
 
+    public float timesHit;
+
     public Asteroid(float x, float y) {
         this.texture = new Texture("asteroid.png");
         sprite = new Sprite(texture);
+        timesHit = 0;
         sprite.setSize(0.5f, 0.5f);
         sprite.setPosition(x, y);
     }
