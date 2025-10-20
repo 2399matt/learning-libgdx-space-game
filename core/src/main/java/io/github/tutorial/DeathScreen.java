@@ -34,6 +34,7 @@ public class DeathScreen implements Screen {
     public void input() {
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
             game.setScreen(new FirstScreen(game));
+            this.dispose();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();

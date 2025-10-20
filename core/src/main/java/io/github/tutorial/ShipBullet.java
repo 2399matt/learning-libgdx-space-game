@@ -3,23 +3,27 @@ package io.github.tutorial;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-public class Asteroid {
+public class ShipBullet {
 
-    //TODO Add bullets, keep track of times hit in here.
     public static Texture texture;
 
     public Sprite sprite;
 
-    public float timesHit;
-
-    public Asteroid(float x, float y) {
+    public ShipBullet(float x, float y) {
         if(texture == null) {
-            texture = new Texture("asteroid.png");
+            texture = new Texture("laser.png");
         }
         sprite = new Sprite(texture);
-        sprite.setSize(0.5f, 0.5f);
+        sprite.setSize(0.2f, 0.2f);
         sprite.setPosition(x, y);
-        timesHit = 0;
+    }
+
+    public ShipBullet() {
+        if(texture == null) {
+            texture = new Texture("laser.png");
+        }
+        sprite = new Sprite(texture);
+        sprite.setSize(0.2f, 0.2f);
     }
 
     public static void dispose() {

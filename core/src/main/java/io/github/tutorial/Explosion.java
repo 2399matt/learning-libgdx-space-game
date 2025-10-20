@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Explosion {
 
-    public Texture texture = new Texture("explosion.png");
+    public static Texture texture;
 
     public Sprite sprite;
 
@@ -14,6 +14,9 @@ public class Explosion {
     public boolean finished;
 
     public Explosion(float x, float y) {
+        if(texture == null) {
+            texture = new Texture("explosion.png");
+        }
         sprite = new Sprite(texture);
         sprite.setSize(0.5f, 0.5f);
         sprite.setPosition(x, y);
@@ -27,8 +30,11 @@ public class Explosion {
         }
     }
 
-    public void dispose() {
-        this.texture.dispose();
+    public static void dispose() {
+        if(texture != null) {
+            texture.dispose();
+            texture = null;
+        }
     }
 
 
