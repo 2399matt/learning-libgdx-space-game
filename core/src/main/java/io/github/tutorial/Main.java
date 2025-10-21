@@ -5,8 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import io.github.tutorial.screen.GameScreen;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
+ */
 public class Main extends Game {
 
     public FitViewport viewport;
@@ -15,6 +18,9 @@ public class Main extends Game {
 
     public BitmapFont font;
 
+    public static int playerScore = 0;
+
+
     @Override
     public void create() {
         viewport = new FitViewport(16, 9);
@@ -22,7 +28,7 @@ public class Main extends Game {
         font = new BitmapFont();
         font.setUseIntegerPositions(false);
         font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
-        setScreen(new FirstScreen(this));
+        setScreen(new GameScreen(this));
     }
 
     @Override
