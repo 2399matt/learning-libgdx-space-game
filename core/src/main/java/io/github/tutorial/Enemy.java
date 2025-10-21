@@ -2,6 +2,7 @@ package io.github.tutorial;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Enemy {
 
@@ -18,7 +19,7 @@ public class Enemy {
     public float moveTimer;
 
     public Enemy() {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("enemy.png");
         }
         this.sprite = new Sprite(texture);
@@ -29,25 +30,32 @@ public class Enemy {
     }
 
     public Enemy(float x, float y) {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("enemy.png");
         }
         this.sprite = new Sprite(texture);
         sprite.setSize(0.5f, 0.5f);
-        sprite.setPosition(x,y);
+        sprite.setPosition(x, y);
         moveTimer = 0f;
         bulletCooldown = 2f;
+    }
+
+    public static void dispose() {
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
     }
 
     public void update(float delta) {
         bulletCooldown -= delta;
         moveTimer += delta;
-        if(isLeft) {
-            sprite.translateX(2f*delta);
+        if (isLeft) {
+            sprite.translateX(2f * delta);
         } else {
-            sprite.translateX(-2f*delta);
+            sprite.translateX(-2f * delta);
         }
-        if(moveTimer > 1f) {
+        if (moveTimer > 1f) {
             isLeft = !isLeft;
             moveTimer = 0f;
         }
@@ -57,10 +65,7 @@ public class Enemy {
         timesHit++;
     }
 
-    public static void dispose() {
-        if(texture != null) {
-            texture.dispose();
-            texture = null;
-        }
+    public Rectangle getHitBox() {
+        return sprite.getBoundingRectangle();
     }
 }
