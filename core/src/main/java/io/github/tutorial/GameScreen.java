@@ -16,36 +16,46 @@ import com.badlogic.gdx.utils.ScreenUtils;
 /**
  * First screen of the application. Displayed after the application is created.
  */
-public class FirstScreen implements Screen {
+public class GameScreen implements Screen {
 
-    public static final float JAH_SPEED = 8f;
+    public static final float SHIP_SPEED = 8f;
     public static final float ASTEROID_SPEED = 4f;
-    public static float asteroidTimer = 0;
+    public static float asteroidTimer = 0f;
+    public static float enemyRespawnTimer = 10f;
     public final Main game;
     public Rectangle asteroidHitBox;
     public Texture background;
     public Rectangle jahHitBox;
     public Rectangle bulletHitBox;
+    public Rectangle enemyHitBox;
+    public Rectangle enemyBulletHitBox;
     public Sound oof;
     public Array<Asteroid> asteroids;
     public Ship ship;
     public Array<Explosion> explosions;
     public Array<ShipBullet> bullets;
+    public Array<Enemy> enemies;
+    public Array<EnemyBullet> enemyBullets;
     public float globalTimer;
     private boolean debug = false;
     private final ShapeRenderer shapeRenderer;
 
-    public FirstScreen(Main game) {
+
+    public GameScreen(Main game) {
         ship = new Ship();
         oof = Gdx.audio.newSound(Gdx.files.internal("oof.mp3"));
         asteroids = new Array<>();
         jahHitBox = new Rectangle();
         asteroidHitBox = new Rectangle();
         bulletHitBox = new Rectangle();
+        enemyHitBox = new Rectangle();
+        enemyBulletHitBox = new Rectangle();
         shapeRenderer = new ShapeRenderer();
         explosions = new Array<>();
         bullets = new Array<>();
-        background = new Texture("space.png");
+        enemies = new Array<>();
+        enemyBullets = new Array<>();
+        background = new Texture("background2.jpg");
         this.game = game;
         globalTimer = 0f;
     }
@@ -71,21 +81,22 @@ public class FirstScreen implements Screen {
     public void input() {
         float delta = Gdx.graphics.getDeltaTime();
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            ship.sprite.translateY(JAH_SPEED * delta);
+            ship.sprite.translateY(SHIP_SPEED * delta);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            ship.sprite.translateY(-JAH_SPEED * delta);
+            ship.sprite.translateY(-SHIP_SPEED * delta);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            ship.sprite.translateX(-JAH_SPEED * delta);
+            ship.sprite.translateX(-SHIP_SPEED * delta);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            ship.sprite.translateX(JAH_SPEED * delta);
+            ship.sprite.translateX(SHIP_SPEED * delta);
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
             debug = !debug;
         }
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            game.laserSound.play(0.5f);
             createBullet();
         }
     }
@@ -96,9 +107,25 @@ public class FirstScreen implements Screen {
             this.dispose();
         }
         float delta = Gdx.graphics.getDeltaTime();
+        spawnEnemies(delta);
         ship.sprite.setX(MathUtils.clamp(ship.sprite.getX(), 0, game.viewport.getWorldWidth() - ship.sprite.getWidth()));
         ship.sprite.setY(MathUtils.clamp(ship.sprite.getY(), 0, game.viewport.getWorldHeight() - ship.sprite.getHeight()));
         jahHitBox.set(ship.sprite.getBoundingRectangle());
+        handleEnemyBulletCollision(jahHitBox);
+        for(Enemy e : enemies) {
+            e.update(delta);
+            if(e.bulletCooldown <= 0f) {
+                e.bulletCooldown = 2f;
+                enemyBullets.add(new EnemyBullet(e.sprite.getX(), e.sprite.getY() - 0.2f));
+            }
+        }
+        for(int i = enemyBullets.size - 1 ; i >= 0; i--) {
+            EnemyBullet enemyBullet = enemyBullets.get(i);
+            enemyBullet.update(delta);
+            if(enemyBullet.sprite.getY() <= - enemyBullet.sprite.getHeight()) {
+                enemyBullets.removeIndex(i);
+            }
+        }
         for(int i = bullets.size - 1; i >= 0; i--) {
             ShipBullet b = bullets.get(i);
             b.sprite.translateY(5f * delta);
@@ -133,7 +160,7 @@ public class FirstScreen implements Screen {
                 asteroidTimer = 0;
             }
         } else {
-            if (asteroidTimer > 0.5f) {
+            if (asteroidTimer > 0.8f) {
                 generateAsteroids();
                 asteroidTimer = 0;
             }
@@ -157,6 +184,12 @@ public class FirstScreen implements Screen {
         for(ShipBullet b : bullets) {
             b.sprite.draw(game.batch);
         }
+        for(EnemyBullet b : enemyBullets) {
+            b.sprite.draw(game.batch);
+        }
+        for(Enemy e : enemies) {
+            e.sprite.draw(game.batch);
+        }
         for (int i = explosions.size - 1; i >= 0; i--) {
             Explosion e = explosions.get(i);
             e.sprite.draw(game.batch);
@@ -168,17 +201,64 @@ public class FirstScreen implements Screen {
         game.batch.end();
     }
 
+    public void spawnEnemies(float delta) {
+        if(!enemies.isEmpty()) {
+            return;
+        }
+        enemyRespawnTimer += delta;
+        if(enemies.isEmpty() && enemyRespawnTimer >= 7f) {
+            enemies.add(new Enemy(4f, game.viewport.getWorldHeight() - 0.5f));
+            enemies.add(new Enemy(8f, game.viewport.getWorldHeight() - 0.5f));
+            enemies.add(new Enemy(12f, game.viewport.getWorldHeight() - 0.5f));
+            enemyRespawnTimer = 0f;
+        }
+    }
+
     public void handleShipBulletCollision(Asteroid asteroid, Rectangle asteroidBox) {
         for(int i = bullets.size - 1; i >= 0; i--) {
             ShipBullet b = bullets.get(i);
             Sprite bullet = b.sprite;
             bulletHitBox.set(bullet.getBoundingRectangle());
+            if(handleEnemyHitCollision(bulletHitBox)) {
+                bullets.removeIndex(i);
+                break;
+            }
             if(bulletHitBox.overlaps(asteroidBox)) {
                 asteroid.timesHit++;
                 bullets.removeIndex(i);
                 break;
             }
         }
+    }
+
+    public void handleEnemyBulletCollision(Rectangle shipHitBox) {
+        for(int i = enemyBullets.size - 1; i >= 0; i--) {
+            EnemyBullet e = enemyBullets.get(i);
+            enemyBulletHitBox.set(e.sprite.getBoundingRectangle());
+            if(enemyBulletHitBox.overlaps(shipHitBox)) {
+                explosions.add(new Explosion(ship.sprite.getX(), ship.sprite.getY()));
+                enemyBullets.removeIndex(i);
+                ship.takeDamage();
+            }
+        }
+    }
+
+    public boolean handleEnemyHitCollision(Rectangle bulletHitBox) {
+        if(enemies.isEmpty()) {
+            return false;
+        }
+        for(int i = enemies.size - 1; i >= 0; i--) {
+            Sprite enemy = enemies.get(i).sprite;
+            enemyHitBox.set(enemy.getBoundingRectangle());
+            if(enemyHitBox.overlaps(bulletHitBox)) {
+                enemies.get(i).takeDamage();
+                if(enemies.get(i).timesHit >= 2) {
+                    enemies.removeIndex(i);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void createBullet() {
@@ -242,6 +322,10 @@ public class FirstScreen implements Screen {
         asteroids.clear();
         bullets.clear();
         explosions.clear();
+        enemyBullets.clear();
+        enemies.clear();
+        Enemy.dispose();
+        EnemyBullet.dispose();
         Asteroid.dispose();
         ShipBullet.dispose();
         Explosion.dispose();

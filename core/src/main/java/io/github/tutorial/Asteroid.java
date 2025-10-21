@@ -14,7 +14,7 @@ public class Asteroid {
 
     public Asteroid(float x, float y) {
         if(texture == null) {
-            texture = new Texture("asteroid.png");
+            texture = new Texture("asteroid2.png");
         }
         sprite = new Sprite(texture);
         sprite.setSize(0.5f, 0.5f);

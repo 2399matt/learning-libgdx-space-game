@@ -25,7 +25,7 @@ public class Explosion {
 
     public void update(float delta) {
         lifeTimer += delta;
-        if (lifeTimer > 1f) {
+        if (lifeTimer > 0.7f) {
             finished = true;
         }
     }

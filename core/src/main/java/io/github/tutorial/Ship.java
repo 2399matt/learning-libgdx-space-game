@@ -5,14 +5,14 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Ship {
 
-    //TODO Possibly store bullets on the ship? 
+    //TODO Possibly store bullets on the ship?
     public Texture texture;
     public Sprite sprite;
     public int lives;
 
     public Ship(float x, float y) {
         lives = 3;
-        texture = new Texture("jah.jfif");
+        texture = new Texture("ship.jpg");
         sprite = new Sprite(texture);
         sprite.setPosition(x, y);
         sprite.setSize(1, 1);
@@ -20,7 +20,7 @@ public class Ship {
 
     public Ship() {
         lives = 3;
-        texture = new Texture("jah.jfif");
+        texture = new Texture("ship.png");
         sprite = new Sprite(texture);
         sprite.setSize(1, 1);
     }
