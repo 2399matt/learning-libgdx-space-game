@@ -2,6 +2,7 @@ package io.github.tutorial;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Asteroid {
 
@@ -13,7 +14,7 @@ public class Asteroid {
     public float timesHit;
 
     public Asteroid(float x, float y) {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("asteroid2.png");
         }
         sprite = new Sprite(texture);
@@ -23,9 +24,13 @@ public class Asteroid {
     }
 
     public static void dispose() {
-        if(texture != null) {
+        if (texture != null) {
             texture.dispose();
             texture = null;
         }
+    }
+
+    public Rectangle getHitBox() {
+        return sprite.getBoundingRectangle();
     }
 }

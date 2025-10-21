@@ -2,7 +2,6 @@ package io.github.tutorial;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -18,7 +17,6 @@ public class Main extends Game {
 
     public BitmapFont font;
 
-    public Sound laserSound;
 
     @Override
     public void create() {
@@ -27,7 +25,6 @@ public class Main extends Game {
         font = new BitmapFont();
         font.setUseIntegerPositions(false);
         font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
-        laserSound =  Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
         setScreen(new GameScreen(this));
     }
 

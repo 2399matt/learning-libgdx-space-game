@@ -2,6 +2,7 @@ package io.github.tutorial;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
 public class EnemyBullet {
 
@@ -18,7 +19,7 @@ public class EnemyBullet {
     public float targetY;
 
     public EnemyBullet() {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("laser.png");
         }
         sprite = new Sprite(texture);
@@ -26,7 +27,7 @@ public class EnemyBullet {
     }
 
     public EnemyBullet(float x, float y) {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("laser.png");
         }
         sprite = new Sprite(texture);
@@ -35,10 +36,14 @@ public class EnemyBullet {
     }
 
     public static void dispose() {
-        if(texture != null) {
+        if (texture != null) {
             texture.dispose();
             texture = null;
         }
+    }
+
+    public Rectangle getHitBox() {
+        return sprite.getBoundingRectangle();
     }
 
     public void update(float delta) {

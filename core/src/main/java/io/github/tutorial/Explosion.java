@@ -14,7 +14,7 @@ public class Explosion {
     public boolean finished;
 
     public Explosion(float x, float y) {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("explosion.png");
         }
         sprite = new Sprite(texture);
@@ -23,17 +23,17 @@ public class Explosion {
         finished = false;
     }
 
+    public static void dispose() {
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
+    }
+
     public void update(float delta) {
         lifeTimer += delta;
         if (lifeTimer > 0.7f) {
             finished = true;
-        }
-    }
-
-    public static void dispose() {
-        if(texture != null) {
-            texture.dispose();
-            texture = null;
         }
     }
 

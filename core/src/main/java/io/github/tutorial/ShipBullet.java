@@ -2,6 +2,7 @@ package io.github.tutorial;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
 public class ShipBullet {
 
@@ -10,7 +11,7 @@ public class ShipBullet {
     public Sprite sprite;
 
     public ShipBullet(float x, float y) {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("laser.png");
         }
         sprite = new Sprite(texture);
@@ -19,7 +20,7 @@ public class ShipBullet {
     }
 
     public ShipBullet() {
-        if(texture == null) {
+        if (texture == null) {
             texture = new Texture("laser.png");
         }
         sprite = new Sprite(texture);
@@ -27,9 +28,17 @@ public class ShipBullet {
     }
 
     public static void dispose() {
-        if(texture != null) {
+        if (texture != null) {
             texture.dispose();
             texture = null;
         }
+    }
+
+    public Rectangle getHitBox() {
+        return sprite.getBoundingRectangle();
+    }
+
+    public void update(float delta) {
+        sprite.translateY(5f * delta);
     }
 }
