@@ -51,8 +51,7 @@ public class EntityManager {
 
     public void updateAll(float delta, FitViewport viewport, float globalTimer) {
         spawnEnemies(delta, viewport);
-        ship.getSprite().setX(MathUtils.clamp(ship.getSprite().getX(), 0, viewport.getWorldWidth() - ship.getSprite().getWidth()));
-        ship.getSprite().setY(MathUtils.clamp(ship.getSprite().getY(), 0, viewport.getWorldHeight() - ship.getSprite().getHeight()));
+        ship.clampShip(viewport);
         handleEnemyBulletCollision(ship.getHitBox());
         for (Enemy e : enemies) {
             e.update(delta);
@@ -158,7 +157,7 @@ public class EntityManager {
     public void handleShipBulletCollision(Asteroid asteroid, Rectangle asteroidBox) {
         for (int i = shipBullets.size - 1; i >= 0; i--) {
             ShipBullet b = shipBullets.get(i);
-            Sprite bullet = b.getSprite();
+            //Sprite bullet = b.getSprite();
             if (handleEnemyHitCollision(b.getHitBox())) {
                 shipBullets.removeIndex(i);
                 break;
@@ -228,7 +227,7 @@ public class EntityManager {
     }
 
     public void dispose() {
-        ship.dispose();
+        //ship.dispose();
         asteroids.clear();
         shipBullets.clear();
         explosions.clear();

@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.tutorial.entity.Ship;
 import io.github.tutorial.manager.BossEntityManager;
 import io.github.tutorial.Main;
 
@@ -19,11 +20,11 @@ public class BossScreen implements Screen {
 
     public BossEntityManager manager;
 
-    public BossScreen(Main game) {
+    public BossScreen(Main game, Ship ship) {
         this.game = game;
         this.background = new Texture("background2.jpg");
         globalTimer = 0f;
-        manager = new BossEntityManager();
+        manager = new BossEntityManager(ship);
     }
 
 
@@ -73,10 +74,12 @@ public class BossScreen implements Screen {
         if(!manager.getShip().isAlive()) {
             game.setScreen(new DeathScreen(game));
             this.dispose();
+            return;
         }
         if(!manager.getBoss().isAlive()) {
             game.setScreen(new DeathScreen(game));
             this.dispose();
+            return;
         }
         float delta = Gdx.graphics.getDeltaTime();
         manager.updateAll(delta, game.viewport);

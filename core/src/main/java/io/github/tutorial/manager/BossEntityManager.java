@@ -29,8 +29,8 @@ public class BossEntityManager {
     private Music music;
     private Sound bossHit;
 
-    public BossEntityManager() {
-        ship = new Ship();
+    public BossEntityManager(Ship ship) {
+        this.ship = ship;
         boss = new Boss();
         shipBullets = new Array<>();
         bossBullets = new Array<>();
@@ -62,8 +62,7 @@ public class BossEntityManager {
 
     public void updateAll(float delta, FitViewport viewport) {
         BULLET_WAVE_TIMER += delta;
-        int rand = (int) MathUtils.random(0, viewport.getWorldWidth() - 1);
-        int rand2 = rand + 1;
+
         switch (bossPhase) {
             case RISING:
                 boss.moveUp(delta);
