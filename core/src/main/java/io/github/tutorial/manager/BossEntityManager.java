@@ -130,6 +130,9 @@ public class BossEntityManager {
         }
     }
     public boolean checkPlayerCollision(BossBullet b) {
+        if(Math.abs(b.getSprite().getX() - ship.getSprite().getX()) > 1.5f ||  Math.abs(b.getSprite().getY() - ship.getSprite().getY()) > 1.5f) {
+            return false;
+        }
         if(ship.getSprite().getBoundingRectangle().overlaps(b.getSprite().getBoundingRectangle())) {
             ship.takeDamage();
             explosions.add(new Explosion(ship.getSprite().getX(), ship.getSprite().getY()));
