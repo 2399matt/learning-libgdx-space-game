@@ -29,8 +29,8 @@ public class BossEntityManager {
     private Music music;
     private Sound bossHit;
 
-    public BossEntityManager() {
-        ship = new Ship();
+    public BossEntityManager(Ship ship) {
+        this.ship = ship;
         boss = new Boss();
         shipBullets = new Array<>();
         bossBullets = new Array<>();
@@ -62,8 +62,7 @@ public class BossEntityManager {
 
     public void updateAll(float delta, FitViewport viewport) {
         BULLET_WAVE_TIMER += delta;
-        int rand = (int) MathUtils.random(0, viewport.getWorldWidth() - 1);
-        int rand2 = rand + 1;
+
         switch (bossPhase) {
             case RISING:
                 boss.moveUp(delta);
@@ -131,6 +130,9 @@ public class BossEntityManager {
         }
     }
     public boolean checkPlayerCollision(BossBullet b) {
+        if(Math.abs(b.getSprite().getX() - ship.getSprite().getX()) > 1.5f ||  Math.abs(b.getSprite().getY() - ship.getSprite().getY()) > 1.5f) {
+            return false;
+        }
         if(ship.getSprite().getBoundingRectangle().overlaps(b.getSprite().getBoundingRectangle())) {
             ship.takeDamage();
             explosions.add(new Explosion(ship.getSprite().getX(), ship.getSprite().getY()));

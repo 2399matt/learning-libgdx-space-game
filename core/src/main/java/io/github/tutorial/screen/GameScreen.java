@@ -69,10 +69,12 @@ public class GameScreen implements Screen {
         if (!entityManager.getShip().isAlive()) {
             game.setScreen(new DeathScreen(game));
             this.dispose();
+            return;
         }
         if (globalTimer >= 45) {
-            game.setScreen(new BossScreen(game));
+            game.setScreen(new BossScreen(game, entityManager.getShip()));
             this.dispose();
+            return;
         }
         float delta = Gdx.graphics.getDeltaTime();
         entityManager.updateAll(delta, game.viewport, globalTimer);

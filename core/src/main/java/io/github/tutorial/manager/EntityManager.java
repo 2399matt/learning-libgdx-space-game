@@ -17,19 +17,21 @@ import io.github.tutorial.entity.*;
 
 public class EntityManager {
 
+    //TODO Transition sprite management to scene2d, then figure out box2d physics for the single contact listener method
+    // can use reflection and remove plenty of the collision for loops we currently have.
     private final float ASTEROID_SPEED = 4f;
+    private final Array<Enemy> enemies;
+    private final Array<EnemyBullet> enemyBullets;
+    private final Array<Asteroid> asteroids;
+    private final Array<Explosion> explosions;
+    private final Array<ShipBullet> shipBullets;
+    private final Ship ship;
+    private final Sound oof;
+    private final Sound laserSound;
+    private final Music music;
+    private final ShapeRenderer shapeRenderer;
     private float asteroidTimer = 0f;
     private float enemyRespawnTimer = 10f;
-    private Array<Enemy> enemies;
-    private Array<EnemyBullet> enemyBullets;
-    private Array<Asteroid> asteroids;
-    private Array<Explosion> explosions;
-    private Array<ShipBullet> shipBullets;
-    private Ship ship;
-    private Sound oof;
-    private Sound laserSound;
-    private Music music;
-    private ShapeRenderer shapeRenderer;
     private boolean debug;
 
     public EntityManager() {
@@ -51,8 +53,7 @@ public class EntityManager {
 
     public void updateAll(float delta, FitViewport viewport, float globalTimer) {
         spawnEnemies(delta, viewport);
-        ship.getSprite().setX(MathUtils.clamp(ship.getSprite().getX(), 0, viewport.getWorldWidth() - ship.getSprite().getWidth()));
-        ship.getSprite().setY(MathUtils.clamp(ship.getSprite().getY(), 0, viewport.getWorldHeight() - ship.getSprite().getHeight()));
+        ship.clampShip(viewport);
         handleEnemyBulletCollision(ship.getHitBox());
         for (Enemy e : enemies) {
             e.update(delta);
@@ -85,6 +86,9 @@ public class EntityManager {
             if (asteroids.get(i).getTimesHit() >= 2) {
                 Main.playerScore += 2;
                 asteroids.removeIndex(i);
+            }
+            if(Math.abs(ship.getSprite().getX() - asteroid.getX()) > 1.5f ||  Math.abs(ship.getSprite().getY() - asteroid.getY()) > 1.5f) {
+                continue;
             }
             if (asteroid.getBoundingRectangle().overlaps(ship.getHitBox())) {
                 oof.play(0.5f);
@@ -158,13 +162,15 @@ public class EntityManager {
     public void handleShipBulletCollision(Asteroid asteroid, Rectangle asteroidBox) {
         for (int i = shipBullets.size - 1; i >= 0; i--) {
             ShipBullet b = shipBullets.get(i);
-            Sprite bullet = b.getSprite();
             if (handleEnemyHitCollision(b.getHitBox())) {
                 shipBullets.removeIndex(i);
                 break;
             }
+            if (Math.abs(b.getSprite().getX() - asteroidBox.getX()) > 1.5f || Math.abs(b.getSprite().getY() - asteroidBox.getY()) > 1.5f) {
+                continue;
+            }
             if (b.getHitBox().overlaps(asteroidBox)) {
-                asteroid.setTimesHit(asteroid.getTimesHit()+ 1);
+                asteroid.setTimesHit(asteroid.getTimesHit() + 1);
                 shipBullets.removeIndex(i);
                 break;
             }
@@ -174,6 +180,9 @@ public class EntityManager {
     public void handleEnemyBulletCollision(Rectangle shipHitBox) {
         for (int i = enemyBullets.size - 1; i >= 0; i--) {
             EnemyBullet e = enemyBullets.get(i);
+            if (Math.abs(e.getSprite().getX() - shipHitBox.getX()) > 1.5f || Math.abs(e.getSprite().getY() - shipHitBox.getY()) > 1.5f) {
+                continue;
+            }
             if (e.getHitBox().overlaps(shipHitBox)) {
                 explosions.add(new Explosion(ship.getSprite().getX(), ship.getSprite().getY()));
                 enemyBullets.removeIndex(i);
@@ -188,6 +197,9 @@ public class EntityManager {
         }
         for (int i = enemies.size - 1; i >= 0; i--) {
             Sprite enemy = enemies.get(i).getSprite();
+            if (Math.abs(enemy.getX() - bulletHitBox.getX()) > 1.5f || Math.abs(enemy.getY() - bulletHitBox.getY()) > 1.5f) {
+                continue;
+            }
             if (enemy.getBoundingRectangle().overlaps(bulletHitBox)) {
                 enemies.get(i).takeDamage();
                 if (enemies.get(i).getTimesHit() >= 2) {
@@ -228,7 +240,7 @@ public class EntityManager {
     }
 
     public void dispose() {
-        ship.dispose();
+        //ship.dispose();
         asteroids.clear();
         shipBullets.clear();
         explosions.clear();
