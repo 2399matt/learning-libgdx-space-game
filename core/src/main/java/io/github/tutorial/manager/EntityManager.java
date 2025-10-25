@@ -41,7 +41,7 @@ public class EntityManager {
         this.explosions = new Array<>();
         this.shipBullets = new Array<>();
         this.enemyBullets = new Array<>();
-        gridManager = new GridManager();
+        gridManager = new GridManager(false);
         this.ship = new Ship();
         oof = Gdx.audio.newSound(Gdx.files.internal("oof.mp3"));
         laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));

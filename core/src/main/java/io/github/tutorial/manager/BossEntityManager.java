@@ -33,7 +33,7 @@ public class BossEntityManager {
         shipBullets = new Array<>();
         bossBullets = new Array<>();
         explosions = new Array<>();
-        gridManager = new GridManager();
+        gridManager = new GridManager(true);
         laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
         bossHit = Gdx.audio.newSound(Gdx.files.internal("boss_hit.mp3"));
         music = Gdx.audio.newMusic(Gdx.files.internal("boss_music.mp3"));
