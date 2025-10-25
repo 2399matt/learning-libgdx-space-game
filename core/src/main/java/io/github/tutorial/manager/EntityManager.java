@@ -9,9 +9,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import io.github.tutorial.GridManager;
 import io.github.tutorial.Main;
 import io.github.tutorial.entity.*;
 
@@ -30,6 +30,7 @@ public class EntityManager {
     private final Sound laserSound;
     private final Music music;
     private final ShapeRenderer shapeRenderer;
+    private final GridManager gridManager;
     private float asteroidTimer = 0f;
     private float enemyRespawnTimer = 10f;
     private boolean debug;
@@ -40,6 +41,7 @@ public class EntityManager {
         this.explosions = new Array<>();
         this.shipBullets = new Array<>();
         this.enemyBullets = new Array<>();
+        gridManager = new GridManager();
         this.ship = new Ship();
         oof = Gdx.audio.newSound(Gdx.files.internal("oof.mp3"));
         laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
@@ -52,11 +54,13 @@ public class EntityManager {
     }
 
     public void updateAll(float delta, FitViewport viewport, float globalTimer) {
+        gridManager.clear();
         spawnEnemies(delta, viewport);
         ship.clampShip(viewport);
-        handleEnemyBulletCollision(ship.getHitBox());
+        gridManager.insert(ship);
         for (Enemy e : enemies) {
             e.update(delta);
+            gridManager.insert(e);
             if (e.bulletCooldown <= 0f) {
                 e.bulletCooldown = 2f;
                 enemyBullets.add(new EnemyBullet(e.getSprite().getX(), e.getSprite().getY() - 0.2f, ship.getSprite().getX(), ship.getSprite().getY()));
@@ -67,37 +71,32 @@ public class EntityManager {
             enemyBullet.update(delta);
             if (enemyBullet.getSprite().getY() <= -enemyBullet.getSprite().getHeight()) {
                 enemyBullets.removeIndex(i);
+                continue;
             }
+            gridManager.insert(enemyBullet);
         }
         for (int i = shipBullets.size - 1; i >= 0; i--) {
             ShipBullet b = shipBullets.get(i);
             b.update(delta);
             if (b.getSprite().getY() > viewport.getWorldHeight() + b.getSprite().getHeight()) {
                 shipBullets.removeIndex(i);
+                continue;
             }
+            gridManager.insert(b);
         }
         for (int i = asteroids.size - 1; i >= 0; i--) {
-            Sprite asteroid = asteroids.get(i).getSprite();
+            Asteroid currAsteroid = asteroids.get(i);
+            Sprite asteroid = currAsteroid.getSprite();
             asteroid.translateY(-ASTEROID_SPEED * delta);
             if (asteroid.getY() < -asteroid.getHeight()) {
                 asteroids.removeIndex(i);
+            } else {
+                gridManager.insert(currAsteroid);
             }
-            handleShipBulletCollision(asteroids.get(i), asteroid.getBoundingRectangle());
-            if (asteroids.get(i).getTimesHit() >= 2) {
-                Main.playerScore += 2;
-                asteroids.removeIndex(i);
-            }
-            if(Math.abs(ship.getSprite().getX() - asteroid.getX()) > 1.5f ||  Math.abs(ship.getSprite().getY() - asteroid.getY()) > 1.5f) {
-                continue;
-            }
-            if (asteroid.getBoundingRectangle().overlaps(ship.getHitBox())) {
-                oof.play(0.5f);
-                explosions.add(new Explosion(asteroid.getX(), asteroid.getY()));
-                asteroids.removeIndex(i);
-                ship.takeDamage();
-                continue;
-            }
-
+        }
+        handleCollisions(ship);
+        for (ShipBullet b : shipBullets) {
+            handleCollisions(b);
         }
         asteroidTimer += delta;
         if (globalTimer > 30f) {
@@ -140,6 +139,56 @@ public class EntityManager {
         }
     }
 
+    public void handleCollisions(Entity target) {
+        Array<Entity> nearBy = gridManager.findNearbyEntities(target.getX(), target.getY());
+        for (int i = 0; i < nearBy.size; i++) {
+            Entity other = nearBy.get(i);
+            if (other == target) {
+                continue;
+            }
+            if (target instanceof Ship ship) {
+                if (other instanceof Asteroid asteroid) {
+                    if (ship.getHitBox().overlaps(asteroid.getHitBox())) {
+                        oof.play(.5f);
+                        explosions.add(new Explosion(asteroid.getX(), asteroid.getY()));
+                        asteroids.removeValue(asteroid, true);
+                        ship.takeDamage();
+                        break;
+                    }
+                } else if (other instanceof EnemyBullet enemyBullet) {
+                    if (ship.getHitBox().overlaps(enemyBullet.getHitBox())) {
+                        enemyBullets.removeValue(enemyBullet, true);
+                        explosions.add(new Explosion(enemyBullet.getX(), enemyBullet.getY()));
+                        ship.takeDamage();
+                        break;
+                    }
+                }
+            } else if (target instanceof ShipBullet shipBullet) {
+                if (other instanceof Asteroid asteroid) {
+                    if (shipBullet.getHitBox().overlaps(asteroid.getHitBox())) {
+                        asteroid.setTimesHit(asteroid.getTimesHit() + 1);
+                        shipBullets.removeValue(shipBullet, true);
+                        if (asteroid.getTimesHit() >= 3) {
+                            asteroids.removeValue(asteroid, true);
+                            Main.playerScore += 2;
+                        }
+                        break;
+                    }
+                } else if (other instanceof Enemy enemy) {
+                    if (shipBullet.getHitBox().overlaps(enemy.getHitBox())) {
+                        enemy.takeDamage();
+                        shipBullets.removeValue(shipBullet, true);
+                        if (enemy.getTimesHit() >= 2) {
+                            enemies.removeValue(enemy, true);
+                            Main.playerScore += 10;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     public void spawnEnemies(float delta, FitViewport viewport) {
         if (!enemies.isEmpty()) {
             return;
@@ -159,61 +208,8 @@ public class EntityManager {
         laserSound.play(0.1f);
     }
 
-    public void handleShipBulletCollision(Asteroid asteroid, Rectangle asteroidBox) {
-        for (int i = shipBullets.size - 1; i >= 0; i--) {
-            ShipBullet b = shipBullets.get(i);
-            if (handleEnemyHitCollision(b.getHitBox())) {
-                shipBullets.removeIndex(i);
-                break;
-            }
-            if (Math.abs(b.getSprite().getX() - asteroidBox.getX()) > 1.5f || Math.abs(b.getSprite().getY() - asteroidBox.getY()) > 1.5f) {
-                continue;
-            }
-            if (b.getHitBox().overlaps(asteroidBox)) {
-                asteroid.setTimesHit(asteroid.getTimesHit() + 1);
-                shipBullets.removeIndex(i);
-                break;
-            }
-        }
-    }
-
-    public void handleEnemyBulletCollision(Rectangle shipHitBox) {
-        for (int i = enemyBullets.size - 1; i >= 0; i--) {
-            EnemyBullet e = enemyBullets.get(i);
-            if (Math.abs(e.getSprite().getX() - shipHitBox.getX()) > 1.5f || Math.abs(e.getSprite().getY() - shipHitBox.getY()) > 1.5f) {
-                continue;
-            }
-            if (e.getHitBox().overlaps(shipHitBox)) {
-                explosions.add(new Explosion(ship.getSprite().getX(), ship.getSprite().getY()));
-                enemyBullets.removeIndex(i);
-                ship.takeDamage();
-            }
-        }
-    }
-
-    public boolean handleEnemyHitCollision(Rectangle bulletHitBox) {
-        if (enemies.isEmpty()) {
-            return false;
-        }
-        for (int i = enemies.size - 1; i >= 0; i--) {
-            Sprite enemy = enemies.get(i).getSprite();
-            if (Math.abs(enemy.getX() - bulletHitBox.getX()) > 1.5f || Math.abs(enemy.getY() - bulletHitBox.getY()) > 1.5f) {
-                continue;
-            }
-            if (enemy.getBoundingRectangle().overlaps(bulletHitBox)) {
-                enemies.get(i).takeDamage();
-                if (enemies.get(i).getTimesHit() >= 2) {
-                    Main.playerScore += 10;
-                    enemies.removeIndex(i);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public void drawDebug(FitViewport viewport) {
-        if (!debug) return;
+        if (!debug || shapeRenderer == null) return;
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.RED);
@@ -240,7 +236,7 @@ public class EntityManager {
     }
 
     public void dispose() {
-        //ship.dispose();
+        debug = false;
         asteroids.clear();
         shipBullets.clear();
         explosions.clear();

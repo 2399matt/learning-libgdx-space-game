@@ -1,27 +1,25 @@
 package io.github.tutorial.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.tutorial.Main;
 
-import java.awt.*;
-
 public class DeathScreen implements Screen {
 
     private final Main game;
 
-    private Stage stage;
+    private final Stage stage;
 
     public DeathScreen(Main game) {
         this.game = game;
@@ -64,13 +62,6 @@ public class DeathScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.BLACK);
-//        game.viewport.apply();
-//        game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
-//        game.batch.begin();
-//        game.font.draw(game.batch, "GAME OVER!", 8, 9);
-//        game.font.draw(game.batch, "Press enter to replay.", 8, 8);
-//        game.font.draw(game.batch, "Press escape to exit.", 8, 7);
-//        game.batch.end();
         stage.act();
         stage.draw();
     }
@@ -78,7 +69,6 @@ public class DeathScreen implements Screen {
     private void changeScreen() {
         game.setScreen(new GameScreen(game));
     }
-
 
 
     @Override

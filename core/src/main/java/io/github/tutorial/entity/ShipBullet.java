@@ -4,11 +4,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 
-public class ShipBullet {
+public class ShipBullet implements Entity {
 
     public static Texture texture;
 
     private Sprite sprite;
+
 
     public ShipBullet(float x, float y) {
         if (texture == null) {
@@ -48,5 +49,15 @@ public class ShipBullet {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
     }
 }

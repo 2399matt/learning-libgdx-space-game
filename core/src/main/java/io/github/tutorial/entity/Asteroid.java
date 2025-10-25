@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Asteroid {
+public class Asteroid implements Entity {
 
     //TODO Add bullets, keep track of times hit in here.
     public static Texture texture;
@@ -48,5 +48,15 @@ public class Asteroid {
 
     public void setTimesHit(float timesHit) {
         this.timesHit = timesHit;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
     }
 }

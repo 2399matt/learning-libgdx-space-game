@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 
-public class EnemyBullet {
+public class EnemyBullet implements Entity {
 
     public static Texture texture = new Texture("laser.png");
 
@@ -60,5 +60,15 @@ public class EnemyBullet {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
     }
 }

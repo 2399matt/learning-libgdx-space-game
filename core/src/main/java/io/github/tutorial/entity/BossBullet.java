@@ -2,8 +2,9 @@ package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
-public class BossBullet {
+public class BossBullet implements Entity {
 
     public static Texture texture = new Texture("laser.png");
     private final float SPEED = 4f;
@@ -28,5 +29,19 @@ public class BossBullet {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
+    }
+
+    public Rectangle getHitBox() {
+        return sprite.getBoundingRectangle();
     }
 }
