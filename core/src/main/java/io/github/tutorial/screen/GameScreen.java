@@ -6,8 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
-import io.github.tutorial.manager.EntityManager;
 import io.github.tutorial.Main;
+import io.github.tutorial.manager.EntityManager;
 
 /**
  * First screen of the application. Displayed after the application is created.
@@ -71,7 +71,7 @@ public class GameScreen implements Screen {
             this.dispose();
             return;
         }
-        if (globalTimer >= 45) {
+        if (globalTimer >= 10) {
             game.setScreen(new BossScreen(game, entityManager.getShip()));
             this.dispose();
             return;

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class Ship {
+public class Ship implements Entity {
 
     private static final float SHIP_SPEED = 6f;
     public Texture texture;
@@ -80,6 +80,16 @@ public class Ship {
     }
 
     public void setLives(int lives) {
-        this.lives=  lives;
+        this.lives = lives;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
     }
 }

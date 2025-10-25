@@ -12,14 +12,10 @@ import io.github.tutorial.screen.GameScreen;
  */
 public class Main extends Game {
 
-    public FitViewport viewport;
-
-    public SpriteBatch batch;
-
-    public BitmapFont font;
-
     public static int playerScore = 0;
-
+    public FitViewport viewport;
+    public SpriteBatch batch;
+    public BitmapFont font;
 
     @Override
     public void create() {

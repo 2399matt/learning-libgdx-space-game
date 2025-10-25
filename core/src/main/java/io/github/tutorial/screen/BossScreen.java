@@ -6,9 +6,9 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.tutorial.Main;
 import io.github.tutorial.entity.Ship;
 import io.github.tutorial.manager.BossEntityManager;
-import io.github.tutorial.Main;
 
 public class BossScreen implements Screen {
 
@@ -71,12 +71,12 @@ public class BossScreen implements Screen {
     }
 
     public void logic() {
-        if(!manager.getShip().isAlive()) {
+        if (!manager.getShip().isAlive()) {
             game.setScreen(new DeathScreen(game));
             this.dispose();
             return;
         }
-        if(!manager.getBoss().isAlive()) {
+        if (!manager.getBoss().isAlive()) {
             game.setScreen(new DeathScreen(game));
             this.dispose();
             return;

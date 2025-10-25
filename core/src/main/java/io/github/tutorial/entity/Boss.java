@@ -3,9 +3,10 @@ package io.github.tutorial.entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class Boss {
+public class Boss implements Entity {
 
     private static Texture texture = new Texture("boss.png");
 
@@ -55,15 +56,15 @@ public class Boss {
     }
 
     public void update(float delta) {
-        if(isLeft()) {
+        if (isLeft()) {
             getSprite().translateX(-3f * delta);
-            if(getSprite().getX() <= getHomeX() - 3f) {
+            if (getSprite().getX() <= getHomeX() - 3f) {
                 getSprite().setX(getHomeX() - 3f);
                 setLeft(false);
             }
         } else {
             getSprite().translateX(3f * delta);
-            if(getSprite().getX() >= getHomeX() + 3f) {
+            if (getSprite().getX() >= getHomeX() + 3f) {
                 getSprite().setX(getHomeX() + 3f);
                 setLeft(true);
             }
@@ -118,5 +119,19 @@ public class Boss {
 
     public void setVulnerable(boolean vulnerable) {
         isVulnerable = vulnerable;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
+    }
+
+    public Rectangle getHitBox() {
+        return sprite.getBoundingRectangle();
     }
 }

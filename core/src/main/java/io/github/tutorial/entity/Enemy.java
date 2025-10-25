@@ -4,14 +4,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Enemy {
+public class Enemy implements Entity {
 
     public static Texture texture = new Texture("enemy.png");
-
-    private Sprite sprite;
-
     public float bulletCooldown;
-
+    private Sprite sprite;
     private boolean isLeft;
 
     private float timesHit;
@@ -83,5 +80,15 @@ public class Enemy {
 
     public void setTimesHit(float timesHit) {
         this.timesHit = timesHit;
+    }
+
+    @Override
+    public float getX() {
+        return sprite.getX();
+    }
+
+    @Override
+    public float getY() {
+        return sprite.getY();
     }
 }
