@@ -2,6 +2,7 @@ package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
 public class EnemyBullet implements Entity {
@@ -29,6 +30,7 @@ public class EnemyBullet implements Entity {
         sprite = new Sprite(texture);
         sprite.setSize(0.3f, 0.3f);
         sprite.setPosition(x, y);
+        sprite.setOriginCenter();
         this.targetX = targetX;
         this.targetY = targetY;
         float dx = targetX - sprite.getX();

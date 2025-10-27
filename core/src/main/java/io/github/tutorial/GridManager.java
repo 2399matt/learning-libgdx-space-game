@@ -10,9 +10,9 @@ public class GridManager {
     private final float cellSize;
     private final HashMap<Point, Array<Entity>> grid;
 
-    public GridManager() {
+    public GridManager(boolean isBossLevel) {
         grid = new HashMap<>();
-        cellSize = 2f;
+        cellSize = (isBossLevel) ? 2f : 1f;
     }
 
     public void insert(Entity target) {

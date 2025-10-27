@@ -23,22 +23,22 @@ public class DeathScreen implements Screen {
 
     public DeathScreen(Main game) {
         this.game = game;
-        stage = new Stage(new ScreenViewport());
+        //stage = new Stage(new ScreenViewport());
+        stage = new Stage();
         Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        // atlas, skin, custom bitmapfont.
         Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         Table table = new Table();
-        Table title = new Table();
-        title.setFillParent(true);
+        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         table.setFillParent(true);
         stage.addActor(table);
-        Label label = new Label("GAME", skin);
-        label.setColor(Color.RED);
-        title.top().add(label).minHeight(400).minWidth(400).center();
-        stage.addActor(title);
+        Label.LabelStyle titleStyle = new Label.LabelStyle(game.font, Color.WHITE);
+        Label label = new Label("GAME", titleStyle);
+        table.add(label).padBottom(40f).row();
         TextButton button = new TextButton("Play Again", skin);
         TextButton qButton = new TextButton("Quit", skin);
         qButton.pad(10f);

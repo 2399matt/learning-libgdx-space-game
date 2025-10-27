@@ -21,9 +21,7 @@ public class Main extends Game {
     public void create() {
         viewport = new FitViewport(16, 9);
         batch = new SpriteBatch();
-        font = new BitmapFont();
-        font.setUseIntegerPositions(false);
-        font.getData().setScale(viewport.getWorldHeight() / Gdx.graphics.getHeight());
+        font = new BitmapFont(Gdx.files.internal("white.fnt"), false);
         setScreen(new GameScreen(this));
     }
 

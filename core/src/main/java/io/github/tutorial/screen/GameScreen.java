@@ -5,9 +5,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.tutorial.Main;
 import io.github.tutorial.manager.EntityManager;
+
 
 /**
  * First screen of the application. Displayed after the application is created.
@@ -15,21 +22,22 @@ import io.github.tutorial.manager.EntityManager;
 public class GameScreen implements Screen {
 
     public final Main game;
+    private final Texture lives;
     public EntityManager entityManager;
-    public Texture background;
+    private final Texture background;
     public float globalTimer;
 
 
     public GameScreen(Main game) {
         entityManager = new EntityManager();
         background = new Texture("background2.jpg");
+        lives = new Texture("heart.png");
         this.game = game;
         globalTimer = 0f;
     }
 
     @Override
     public void show() {
-        // Prepare your screen here.
     }
 
     @Override
@@ -40,9 +48,6 @@ public class GameScreen implements Screen {
         draw();
     }
 
-    //TODO left click input to fire bullets.
-    // standard hitbox, check overlap with asteroid and increment times hit
-    // say 3 shots destroys asteroids, will be done in logic()
     public void input() {
         float delta = Gdx.graphics.getDeltaTime();
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
@@ -89,6 +94,10 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(background, 0, 0, game.viewport.getWorldWidth(), game.viewport.getWorldHeight());
         entityManager.drawAll(game.batch, globalTimer, game.font, delta);
+        int lives = entityManager.getShip().getLives();
+        for(int i = 0; i < lives; i++) {
+            game.batch.draw(this.lives, i * .5f, game.viewport.getWorldHeight() - 1f, .3f, .3f);
+        }
         game.batch.end();
         entityManager.drawDebug(game.viewport);
     }
@@ -123,6 +132,7 @@ public class GameScreen implements Screen {
     public void dispose() {
         // Destroy screen's assets here.
         background.dispose();
+        lives.dispose();
         entityManager.dispose();
     }
 }
