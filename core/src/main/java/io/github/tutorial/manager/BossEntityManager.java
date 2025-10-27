@@ -3,6 +3,7 @@ package io.github.tutorial.manager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.MathUtils;
@@ -42,10 +43,8 @@ public class BossEntityManager {
         music.play();
     }
 
-    public void drawAll(float globalTimer, float delta, Batch batch, BitmapFont font) {
-        font.draw(batch, "CURRENT SCORE: " + Main.playerScore, 8, 9);
-        font.draw(batch, "CURRENT LIVES: " + ship.getLives(), 0, 9);
-        font.draw(batch, "BOSS LIFE: " + boss.getHealth(), 15, 9);
+    public void drawAll(Batch batch) {
+        //font.draw(batch, "CURRENT SCORE: " + Main.playerScore, 15, 9);
         ship.getSprite().draw(batch);
         boss.getSprite().draw(batch);
         for (ShipBullet b : shipBullets) {

@@ -114,9 +114,7 @@ public class EntityManager {
 
     public void drawAll(Batch batch, float globalTimer, BitmapFont font, float delta) {
         ship.getSprite().draw(batch);
-        font.draw(batch, "CURRENT SCORE: " + Main.playerScore, 8, 9);
-        font.draw(batch, "CURRENT LIVES: " + ship.getLives(), 0, 9);
-        font.draw(batch, globalTimer + "S", 15, 9);
+        font.draw(batch, "CURRENT SCORE: " + Main.playerScore, 15, 9);
         for (Asteroid asteroid : asteroids) {
             asteroid.getSprite().draw(batch);
         }

@@ -12,11 +12,7 @@ public class GridManager {
 
     public GridManager(boolean isBossLevel) {
         grid = new HashMap<>();
-        if(isBossLevel) {
-            cellSize = 2f;
-        } else {
-            cellSize = 1f;
-        }
+        cellSize = (isBossLevel) ? 2f : 1f;
     }
 
     public void insert(Entity target) {
