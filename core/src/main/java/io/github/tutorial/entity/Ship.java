@@ -1,7 +1,7 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -9,22 +9,19 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class Ship implements Entity {
 
     private static final float SHIP_SPEED = 6f;
-    public Texture texture;
     private Sprite sprite;
     private int lives;
 
-    public Ship(float x, float y) {
+    public Ship(float x, float y, TextureAtlas atlas) {
         lives = 5;
-        texture = new Texture("ship.jpg");
-        sprite = new Sprite(texture);
+        sprite = new Sprite(atlas.findRegion("ship"));
         sprite.setPosition(x, y);
         sprite.setSize(1, 1);
     }
 
-    public Ship() {
+    public Ship(TextureAtlas atlas) {
         lives = 5;
-        texture = new Texture("ship.png");
-        sprite = new Sprite(texture);
+        sprite = new Sprite(atlas.findRegion("ship"));
         sprite.setSize(1, 1);
     }
 
@@ -63,9 +60,6 @@ public class Ship implements Entity {
         sprite.translateX(-SHIP_SPEED * delta);
     }
 
-    public void dispose() {
-        this.texture.dispose();
-    }
 
     public Sprite getSprite() {
         return sprite;

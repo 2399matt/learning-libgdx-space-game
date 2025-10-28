@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -14,12 +15,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.tutorial.GridManager;
 import io.github.tutorial.Main;
 import io.github.tutorial.entity.*;
+import io.github.tutorial.pool.AsteroidPool;
+import io.github.tutorial.pool.EnemyBulletPool;
+import io.github.tutorial.pool.EnemyPool;
+import io.github.tutorial.pool.ShipBulletPool;
 
 public class EntityManager {
 
-    //TODO Transition sprite management to scene2d, then figure out box2d physics for the single contact listener method
-    // can use reflection and remove plenty of the collision for loops we currently have.
-    private final float ASTEROID_SPEED = 4f;
     private final Array<Enemy> enemies;
     private final Array<EnemyBullet> enemyBullets;
     private final Array<Asteroid> asteroids;
@@ -31,18 +33,28 @@ public class EntityManager {
     private final Music music;
     private final ShapeRenderer shapeRenderer;
     private final GridManager gridManager;
+    private final AsteroidPool asteroidPool;
+    private final EnemyBulletPool enemyBulletPool;
+    private final EnemyPool enemyPool;
+    private final ShipBulletPool shipBulletPool;
+    private final TextureAtlas atlas;
     private float asteroidTimer = 0f;
     private float enemyRespawnTimer = 10f;
     private boolean debug;
 
-    public EntityManager() {
+    public EntityManager(TextureAtlas atlas) {
+        this.atlas = atlas;
         this.enemies = new Array<>();
         this.asteroids = new Array<>();
         this.explosions = new Array<>();
         this.shipBullets = new Array<>();
         this.enemyBullets = new Array<>();
+        asteroidPool = new AsteroidPool(atlas);
+        enemyBulletPool = new EnemyBulletPool(atlas);
+        shipBulletPool = new ShipBulletPool(atlas);
+        enemyPool = new EnemyPool(atlas);
         gridManager = new GridManager(false);
-        this.ship = new Ship();
+        this.ship = new Ship(atlas);
         oof = Gdx.audio.newSound(Gdx.files.internal("oof.mp3"));
         laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
         shapeRenderer = new ShapeRenderer();
@@ -63,13 +75,17 @@ public class EntityManager {
             gridManager.insert(e);
             if (e.bulletCooldown <= 0f) {
                 e.bulletCooldown = 2f;
-                enemyBullets.add(new EnemyBullet(e.getSprite().getX(), e.getSprite().getY() - 0.2f, ship.getSprite().getX(), ship.getSprite().getY()));
+                EnemyBullet eBullet = enemyBulletPool.obtain();
+                eBullet.reset();
+                eBullet.init(e.getX(), e.getY() - 0.2f, ship.getX(), ship.getY());
+                enemyBullets.add(eBullet);
             }
         }
         for (int i = enemyBullets.size - 1; i >= 0; i--) {
             EnemyBullet enemyBullet = enemyBullets.get(i);
             enemyBullet.update(delta);
             if (enemyBullet.getSprite().getY() <= -enemyBullet.getSprite().getHeight()) {
+                enemyBulletPool.free(enemyBullet);
                 enemyBullets.removeIndex(i);
                 continue;
             }
@@ -79,6 +95,7 @@ public class EntityManager {
             ShipBullet b = shipBullets.get(i);
             b.update(delta);
             if (b.getSprite().getY() > viewport.getWorldHeight() + b.getSprite().getHeight()) {
+                shipBulletPool.free(b);
                 shipBullets.removeIndex(i);
                 continue;
             }
@@ -86,9 +103,10 @@ public class EntityManager {
         }
         for (int i = asteroids.size - 1; i >= 0; i--) {
             Asteroid currAsteroid = asteroids.get(i);
+            currAsteroid.update(delta);
             Sprite asteroid = currAsteroid.getSprite();
-            asteroid.translateY(-ASTEROID_SPEED * delta);
             if (asteroid.getY() < -asteroid.getHeight()) {
+                asteroidPool.free(currAsteroid);
                 asteroids.removeIndex(i);
             } else {
                 gridManager.insert(currAsteroid);
@@ -101,12 +119,18 @@ public class EntityManager {
         asteroidTimer += delta;
         if (globalTimer > 30f) {
             if (asteroidTimer > 0.2f) {
-                asteroids.add(new Asteroid(MathUtils.random(0f, viewport.getWorldWidth() - 1), viewport.getWorldHeight()));
+                Asteroid asteroid = asteroidPool.obtain();
+                asteroid.reset();
+                asteroid.init(MathUtils.random(0f, viewport.getWorldWidth() - 1), viewport.getWorldHeight());
+                asteroids.add(asteroid);
                 asteroidTimer = 0;
             }
         } else {
             if (asteroidTimer > 0.8f) {
-                asteroids.add(new Asteroid(MathUtils.random(0f, viewport.getWorldWidth() - 1), viewport.getWorldHeight()));
+                Asteroid asteroid = asteroidPool.obtain();
+                asteroid.reset();
+                asteroid.init(MathUtils.random(0f, viewport.getWorldWidth() - 1), viewport.getWorldHeight());
+                asteroids.add(asteroid);
                 asteroidTimer = 0;
             }
         }
@@ -148,15 +172,17 @@ public class EntityManager {
                 if (other instanceof Asteroid asteroid) {
                     if (ship.getHitBox().overlaps(asteroid.getHitBox())) {
                         oof.play(.5f);
-                        explosions.add(new Explosion(asteroid.getX(), asteroid.getY()));
+                        explosions.add(new Explosion(asteroid.getX(), asteroid.getY(), atlas));
+                        asteroidPool.free(asteroid);
                         asteroids.removeValue(asteroid, true);
                         ship.takeDamage();
                         break;
                     }
                 } else if (other instanceof EnemyBullet enemyBullet) {
                     if (ship.getHitBox().overlaps(enemyBullet.getHitBox())) {
+                        enemyBulletPool.free(enemyBullet);
                         enemyBullets.removeValue(enemyBullet, true);
-                        explosions.add(new Explosion(enemyBullet.getX(), enemyBullet.getY()));
+                        explosions.add(new Explosion(enemyBullet.getX(), enemyBullet.getY(), atlas));
                         ship.takeDamage();
                         break;
                     }
@@ -165,8 +191,10 @@ public class EntityManager {
                 if (other instanceof Asteroid asteroid) {
                     if (shipBullet.getHitBox().overlaps(asteroid.getHitBox())) {
                         asteroid.setTimesHit(asteroid.getTimesHit() + 1);
+                        shipBulletPool.free(shipBullet);
                         shipBullets.removeValue(shipBullet, true);
                         if (asteroid.getTimesHit() >= 3) {
+                            asteroidPool.free(asteroid);
                             asteroids.removeValue(asteroid, true);
                             Main.playerScore += 2;
                         }
@@ -175,8 +203,10 @@ public class EntityManager {
                 } else if (other instanceof Enemy enemy) {
                     if (shipBullet.getHitBox().overlaps(enemy.getHitBox())) {
                         enemy.takeDamage();
+                        shipBulletPool.free(shipBullet);
                         shipBullets.removeValue(shipBullet, true);
                         if (enemy.getTimesHit() >= 2) {
+                            enemyPool.free(enemy);
                             enemies.removeValue(enemy, true);
                             Main.playerScore += 10;
                         }
@@ -193,15 +223,19 @@ public class EntityManager {
         }
         enemyRespawnTimer += delta;
         if (enemies.isEmpty() && enemyRespawnTimer >= 7f) {
-            enemies.add(new Enemy(4f, viewport.getWorldHeight() - 0.5f));
-            enemies.add(new Enemy(8f, viewport.getWorldHeight() - 0.5f));
-            enemies.add(new Enemy(12f, viewport.getWorldHeight() - 0.5f));
+            for (int i = 4; i < 13; i += 4) {
+                Enemy enemy = enemyPool.obtain();
+                enemy.reset();
+                enemy.init((float) i, viewport.getWorldHeight() - 0.5f);
+                enemies.add(enemy);
+            }
             enemyRespawnTimer = 0f;
         }
     }
 
     public void createBullet() {
-        ShipBullet shipBullet = new ShipBullet(ship.getSprite().getX(), ship.getSprite().getY() + 1);
+        ShipBullet shipBullet = shipBulletPool.obtain();
+        shipBullet.init(ship.getX(), ship.getY() + 1f);
         shipBullets.add(shipBullet);
         laserSound.play(0.1f);
     }
@@ -240,11 +274,10 @@ public class EntityManager {
         explosions.clear();
         enemyBullets.clear();
         enemies.clear();
-        Enemy.dispose();
-        EnemyBullet.dispose();
-        Asteroid.dispose();
-        ShipBullet.dispose();
-        Explosion.dispose();
+        shipBulletPool.clear();
+        asteroidPool.clear();
+        enemyBulletPool.clear();
+        enemyPool.clear();
         oof.dispose();
         shapeRenderer.dispose();
         laserSound.dispose();

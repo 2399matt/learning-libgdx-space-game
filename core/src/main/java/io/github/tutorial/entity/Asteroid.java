@@ -1,33 +1,40 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Asteroid implements Entity {
 
-    //TODO Add bullets, keep track of times hit in here.
-    public static Texture texture;
+    private static final float ASTEROID_SPEED = 4f;
 
     private Sprite sprite;
 
     private float timesHit;
 
-    public Asteroid(float x, float y) {
-        if (texture == null) {
-            texture = new Texture("asteroid2.png");
-        }
-        sprite = new Sprite(texture);
+    public Asteroid(TextureAtlas atlas) {
+        sprite = new Sprite(atlas.findRegion("asteroid2"));
+        sprite.setSize(0.5f, 0.5f);
+        timesHit = 0;
+    }
+
+    public Asteroid(float x, float y, TextureAtlas atlas) {
+        sprite = new Sprite(atlas.findRegion("asteroid2"));
         sprite.setSize(0.5f, 0.5f);
         sprite.setPosition(x, y);
         timesHit = 0;
     }
 
-    public static void dispose() {
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
+    public void update(float delta) {
+        sprite.translateY(-ASTEROID_SPEED * delta);
+    }
+
+    public void init(float x, float y) {
+        sprite.setPosition(x, y);
+    }
+
+    public void reset() {
+        timesHit = 0;
     }
 
     public Rectangle getHitBox() {

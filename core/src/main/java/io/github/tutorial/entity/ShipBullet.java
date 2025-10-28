@@ -1,38 +1,31 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
 public class ShipBullet implements Entity {
 
-    public static Texture texture;
-
     private Sprite sprite;
 
 
-    public ShipBullet(float x, float y) {
-        if (texture == null) {
-            texture = new Texture("laser.png");
-        }
-        sprite = new Sprite(texture);
+    public ShipBullet(float x, float y, TextureAtlas atlas) {
+        sprite = new Sprite(atlas.findRegion("laser"));
         sprite.setSize(0.3f, 0.3f);
         sprite.setPosition(x, y);
     }
 
-    public ShipBullet() {
-        if (texture == null) {
-            texture = new Texture("laser.png");
-        }
-        sprite = new Sprite(texture);
+    public ShipBullet(TextureAtlas atlas) {
+        sprite = new Sprite(atlas.findRegion("laser"));
         sprite.setSize(0.3f, 0.3f);
     }
 
     public static void dispose() {
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
+
+    }
+
+    public void init(float x, float y) {
+        sprite.setPosition(x, y);
     }
 
     public Rectangle getHitBox() {

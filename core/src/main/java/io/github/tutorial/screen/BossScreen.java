@@ -4,12 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.tutorial.Main;
 import io.github.tutorial.entity.Ship;
@@ -19,26 +19,24 @@ public class BossScreen implements Screen {
 
     public final Main game;
 
-    private Texture background;
-
-    private Texture lives;
-
+    private final TextureAtlas atlas;
     public float globalTimer;
-
     public BossEntityManager manager;
+    private final TextureRegion background;
+    private final TextureRegion lives;
+    private final Stage stage;
 
-    private Stage stage;
+    private final ProgressBar progressBar;
 
-    private ProgressBar progressBar;
+    private final Skin skin;
 
-    private Skin skin;
-
-    public BossScreen(Main game, Ship ship) {
+    public BossScreen(Main game, Ship ship, TextureAtlas atlas) {
         this.game = game;
-        this.background = new Texture("background2.jpg");
-        this.lives = new Texture("heart.png");
+        this.atlas = atlas;
+        background = atlas.findRegion("background2");
+        lives = atlas.findRegion("heart");
         globalTimer = 0f;
-        manager = new BossEntityManager(ship);
+        manager = new BossEntityManager(ship, atlas);
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         progressBar = new ProgressBar(0, 100, 1, false, skin);
@@ -47,7 +45,7 @@ public class BossScreen implements Screen {
 
     @Override
     public void show() {
-        progressBar.setPosition((Gdx.graphics.getWidth() - 300f) / 2f, Gdx.graphics.getHeight()-37f);
+        progressBar.setPosition((Gdx.graphics.getWidth() - 300f) / 2f, Gdx.graphics.getHeight() - 37f);
         progressBar.setSize(300f, 50f);
         stage.addActor(progressBar);
     }
@@ -85,11 +83,11 @@ public class BossScreen implements Screen {
         game.viewport.apply();
         game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
         game.batch.begin();
-        int lives = manager.getShip().getLives();
+        short lives = (short) manager.getShip().getLives();
         game.batch.draw(background, 0, 0, game.viewport.getWorldWidth(), game.viewport.getWorldHeight());
         manager.drawAll(game.batch);
-        for(int i = 0; i < lives; i++) {
-            game.batch.draw(this.lives, i * .5f, game.viewport.getWorldHeight()-0.5f, 0.3f, 0.3f);
+        for (int i = 0; i < lives; i++) {
+            game.batch.draw(this.lives, i * .5f, game.viewport.getWorldHeight() - 0.5f, 0.3f, 0.3f);
         }
         game.batch.end();
         stage.act(delta);
@@ -98,12 +96,12 @@ public class BossScreen implements Screen {
 
     public void logic() {
         if (!manager.getShip().isAlive()) {
-            game.setScreen(new DeathScreen(game));
+            game.setScreen(new DeathScreen(game, atlas));
             this.dispose();
             return;
         }
         if (!manager.getBoss().isAlive()) {
-            game.setScreen(new DeathScreen(game));
+            game.setScreen(new DeathScreen(game, atlas));
             this.dispose();
             return;
         }
@@ -134,8 +132,6 @@ public class BossScreen implements Screen {
 
     @Override
     public void dispose() {
-        background.dispose();
         manager.dispose();
-        lives.dispose();
     }
 }

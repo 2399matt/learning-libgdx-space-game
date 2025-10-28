@@ -1,11 +1,9 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 public class Explosion {
-
-    public static Texture texture;
 
     private Sprite sprite;
 
@@ -13,21 +11,11 @@ public class Explosion {
 
     private boolean finished;
 
-    public Explosion(float x, float y) {
-        if (texture == null) {
-            texture = new Texture("explosion.png");
-        }
-        sprite = new Sprite(texture);
+    public Explosion(float x, float y, TextureAtlas atlas) {
+        sprite = new Sprite(atlas.findRegion("explosion"));
         sprite.setSize(0.5f, 0.5f);
         sprite.setPosition(x, y);
         finished = false;
-    }
-
-    public static void dispose() {
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
     }
 
     public void update(float delta) {

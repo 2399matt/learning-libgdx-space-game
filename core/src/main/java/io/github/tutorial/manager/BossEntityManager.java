@@ -3,14 +3,12 @@ package io.github.tutorial.manager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import io.github.tutorial.GridManager;
-import io.github.tutorial.Main;
 import io.github.tutorial.entity.*;
 
 public class BossEntityManager {
@@ -22,15 +20,17 @@ public class BossEntityManager {
     private final Sound laserSound;
     private final Music music;
     private final Sound bossHit;
+    private final TextureAtlas atlas;
     private phase bossPhase = phase.RISING;
     private float BULLET_WAVE_TIMER = 0f;
     private float BULLET_COOLDOWN = 0f;
     private Ship ship;
     private Boss boss;
 
-    public BossEntityManager(Ship ship) {
+    public BossEntityManager(Ship ship, TextureAtlas atlas) {
         this.ship = ship;
-        boss = new Boss();
+        this.atlas = atlas;
+        boss = new Boss(atlas);
         shipBullets = new Array<>();
         bossBullets = new Array<>();
         explosions = new Array<>();
@@ -73,7 +73,7 @@ public class BossEntityManager {
             case ATTACKING:
                 BULLET_COOLDOWN += delta;
                 if (BULLET_COOLDOWN >= 0.1f) {
-                    BossBullet b = new BossBullet(MathUtils.random(0f, viewport.getWorldWidth()), boss.getSprite().getY() + 1);
+                    BossBullet b = new BossBullet(MathUtils.random(0f, viewport.getWorldWidth()), boss.getSprite().getY() + 1, atlas);
                     bossBullets.add(b);
                     BULLET_COOLDOWN = 0f;
                 }
@@ -142,7 +142,7 @@ public class BossEntityManager {
             if (target instanceof Ship) {
                 if (other instanceof BossBullet bossBullet) {
                     if (ship.getHitBox().overlaps(bossBullet.getHitBox())) {
-                        explosions.add(new Explosion(bossBullet.getX(), bossBullet.getY()));
+                        explosions.add(new Explosion(bossBullet.getX(), bossBullet.getY(), atlas));
                         bossBullets.removeValue(bossBullet, true);
                         ship.takeDamage();
                         break;
@@ -162,7 +162,7 @@ public class BossEntityManager {
     }
 
     public void createBullet() {
-        ShipBullet shipBullet = new ShipBullet(ship.getSprite().getX(), ship.getSprite().getY() + 1);
+        ShipBullet shipBullet = new ShipBullet(ship.getSprite().getX(), ship.getSprite().getY() + 1, atlas);
         shipBullets.add(shipBullet);
         laserSound.play(0.1f);
     }
@@ -171,7 +171,6 @@ public class BossEntityManager {
         shipBullets.clear();
         bossBullets.clear();
         laserSound.dispose();
-        ship.dispose();
         bossHit.dispose();
         music.dispose();
     }

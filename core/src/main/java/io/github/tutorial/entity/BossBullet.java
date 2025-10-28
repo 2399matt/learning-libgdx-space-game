@@ -1,20 +1,16 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
 public class BossBullet implements Entity {
 
-    public static Texture texture = new Texture("laser.png");
     private final float SPEED = 4f;
     private Sprite sprite;
 
-    public BossBullet(float x, float y) {
-        if (texture == null) {
-            texture = new Texture("laser.png");
-        }
-        sprite = new Sprite(texture);
+    public BossBullet(float x, float y, TextureAtlas atlas) {
+        sprite = new Sprite(atlas.findRegion("laser"));
         sprite.setPosition(x, y);
         sprite.setSize(0.3f, 0.3f);
     }

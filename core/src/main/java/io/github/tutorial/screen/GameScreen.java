@@ -4,14 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.tutorial.Main;
 import io.github.tutorial.manager.EntityManager;
 
@@ -22,16 +17,18 @@ import io.github.tutorial.manager.EntityManager;
 public class GameScreen implements Screen {
 
     public final Main game;
-    private final Texture lives;
     public EntityManager entityManager;
-    private final Texture background;
     public float globalTimer;
+    private final TextureRegion background;
+    private final TextureRegion lives;
+    private final TextureAtlas atlas;
 
 
-    public GameScreen(Main game) {
-        entityManager = new EntityManager();
-        background = new Texture("background2.jpg");
-        lives = new Texture("heart.png");
+    public GameScreen(Main game, TextureAtlas atlas) {
+        entityManager = new EntityManager(atlas);
+        lives = atlas.findRegion("heart");
+        background = atlas.findRegion("background2");
+        this.atlas = atlas;
         this.game = game;
         globalTimer = 0f;
     }
@@ -72,12 +69,12 @@ public class GameScreen implements Screen {
 
     public void logic() {
         if (!entityManager.getShip().isAlive()) {
-            game.setScreen(new DeathScreen(game));
+            game.setScreen(new DeathScreen(game, atlas));
             this.dispose();
             return;
         }
         if (globalTimer >= 10) {
-            game.setScreen(new BossScreen(game, entityManager.getShip()));
+            game.setScreen(new BossScreen(game, entityManager.getShip(), atlas));
             this.dispose();
             return;
         }
@@ -94,8 +91,8 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(background, 0, 0, game.viewport.getWorldWidth(), game.viewport.getWorldHeight());
         entityManager.drawAll(game.batch, globalTimer, game.font, delta);
-        int lives = entityManager.getShip().getLives();
-        for(int i = 0; i < lives; i++) {
+        short lives = (short) entityManager.getShip().getLives();
+        for (int i = 0; i < lives; i++) {
             game.batch.draw(this.lives, i * .5f, game.viewport.getWorldHeight() - 1f, .3f, .3f);
         }
         game.batch.end();
@@ -131,8 +128,6 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         // Destroy screen's assets here.
-        background.dispose();
-        lives.dispose();
         entityManager.dispose();
     }
 }
