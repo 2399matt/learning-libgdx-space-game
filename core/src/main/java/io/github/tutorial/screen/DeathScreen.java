@@ -3,6 +3,7 @@ package io.github.tutorial.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,18 +13,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import io.github.tutorial.Main;
 
 public class DeathScreen implements Screen {
 
     private final Main game;
-
     private final Stage stage;
+    private final TextureAtlas atlas;
 
-    public DeathScreen(Main game) {
+    public DeathScreen(Main game, TextureAtlas atlas) {
         this.game = game;
-        //stage = new Stage(new ScreenViewport());
+        this.atlas = atlas;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
     }
@@ -67,7 +67,7 @@ public class DeathScreen implements Screen {
     }
 
     private void changeScreen() {
-        game.setScreen(new GameScreen(game));
+        game.setScreen(new GameScreen(game, atlas));
     }
 
 

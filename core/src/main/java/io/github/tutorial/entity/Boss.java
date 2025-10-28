@@ -1,14 +1,12 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Boss implements Entity {
-
-    private static Texture texture = new Texture("boss.png");
 
     private float health;
 
@@ -20,24 +18,14 @@ public class Boss implements Entity {
 
     private boolean isVulnerable;
 
-    public Boss() {
-        if (texture == null) {
-            texture = new Texture("boss.png");
-        }
-        setSprite(new Sprite(texture));
+    public Boss(TextureAtlas atlas) {
+        setSprite(new Sprite(atlas.findRegion("boss")));
         getSprite().setPosition(7f, 4f);
         setHomeX(getSprite().getX());
         getSprite().setSize(4f, 3f);
         setHealth(100);
         setLeft(false);
         setVulnerable(true);
-    }
-
-    public static void dispose() {
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
     }
 
     public void moveUp(float delta) {

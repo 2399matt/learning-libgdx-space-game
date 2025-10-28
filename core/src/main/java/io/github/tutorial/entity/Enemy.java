@@ -1,12 +1,11 @@
 package io.github.tutorial.entity;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Enemy implements Entity {
 
-    public static Texture texture = new Texture("enemy.png");
     public float bulletCooldown;
     private Sprite sprite;
     private boolean isLeft;
@@ -15,33 +14,30 @@ public class Enemy implements Entity {
 
     private float moveTimer;
 
-    public Enemy() {
-        if (texture == null) {
-            texture = new Texture("enemy.png");
-        }
-        this.sprite = new Sprite(texture);
+    public Enemy(TextureAtlas atlas) {
+        this.sprite = new Sprite(atlas.findRegion("enemy"));
         sprite.setSize(0.5f, 0.5f);
         bulletCooldown = 2f;
         moveTimer = 0f;
         isLeft = true;
     }
 
-    public Enemy(float x, float y) {
-        if (texture == null) {
-            texture = new Texture("enemy.png");
-        }
-        this.sprite = new Sprite(texture);
+    public Enemy(float x, float y, TextureAtlas atlas) {
+        this.sprite = new Sprite(atlas.findRegion("enemy"));
         sprite.setSize(0.5f, 0.5f);
         sprite.setPosition(x, y);
         moveTimer = 0f;
         bulletCooldown = 2f;
     }
 
-    public static void dispose() {
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
+    public void init(float x, float y) {
+        sprite.setPosition(x, y);
+    }
+
+    public void reset() {
+        isLeft = true;
+        moveTimer = 0f;
+        bulletCooldown = 2f;
     }
 
     public void update(float delta) {
