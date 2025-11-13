@@ -1,7 +1,8 @@
-package io.github.tutorial;
+package io.github.tutorial.manager;
 
 import com.badlogic.gdx.utils.Array;
 import io.github.tutorial.entity.Entity;
+import io.github.tutorial.entity.Point;
 
 import java.util.HashMap;
 

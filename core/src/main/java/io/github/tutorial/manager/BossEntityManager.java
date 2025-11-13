@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import io.github.tutorial.GridManager;
 import io.github.tutorial.entity.*;
 
 public class BossEntityManager {

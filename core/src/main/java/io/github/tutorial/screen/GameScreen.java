@@ -40,13 +40,12 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         globalTimer += delta;
-        input();
-        logic();
-        draw();
+        input(delta);
+        logic(delta);
+        draw(delta);
     }
 
-    public void input() {
-        float delta = Gdx.graphics.getDeltaTime();
+    public void input(float delta) {
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             entityManager.getShip().moveUp(delta);
         }
@@ -67,23 +66,21 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void logic() {
+    public void logic(float delta) {
         if (!entityManager.getShip().isAlive()) {
             game.setScreen(new DeathScreen(game, atlas));
             this.dispose();
             return;
         }
-        if (globalTimer >= 10) {
+        if (globalTimer >= 12) {
             game.setScreen(new BossScreen(game, entityManager.getShip(), atlas));
             this.dispose();
             return;
         }
-        float delta = Gdx.graphics.getDeltaTime();
         entityManager.updateAll(delta, game.viewport, globalTimer);
     }
 
-    public void draw() {
-        float delta = Gdx.graphics.getDeltaTime();
+    public void draw(float delta) {
         ScreenUtils.clear(Color.BLACK);
         game.viewport.apply();
         game.batch.setProjectionMatrix(game.viewport.getCamera().combined);
