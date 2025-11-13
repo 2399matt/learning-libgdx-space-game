@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import io.github.tutorial.GridManager;
 import io.github.tutorial.Main;
 import io.github.tutorial.entity.*;
 import io.github.tutorial.pool.AsteroidPool;
@@ -168,7 +167,7 @@ public class EntityManager {
             if (other == target) {
                 continue;
             }
-            if (target instanceof Ship ship) {
+            if (target instanceof Ship) {
                 if (other instanceof Asteroid asteroid) {
                     if (ship.getHitBox().overlaps(asteroid.getHitBox())) {
                         oof.play(.5f);
@@ -223,6 +222,7 @@ public class EntityManager {
         }
         enemyRespawnTimer += delta;
         if (enemies.isEmpty() && enemyRespawnTimer >= 7f) {
+            // 16 wide vp, spawn inc 4.
             for (int i = 4; i < 13; i += 4) {
                 Enemy enemy = enemyPool.obtain();
                 enemy.reset();
