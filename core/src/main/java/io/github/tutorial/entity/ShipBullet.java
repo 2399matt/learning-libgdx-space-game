@@ -1,10 +1,11 @@
 package io.github.tutorial.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
-public class ShipBullet implements Entity {
+public class ShipBullet implements Entity, Renderable {
 
     private Sprite sprite;
 
@@ -34,6 +35,11 @@ public class ShipBullet implements Entity {
 
     public void update(float delta) {
         sprite.translateY(5f * delta);
+    }
+
+    @Override
+    public void render(Batch batch) {
+        sprite.draw(batch);
     }
 
     public Sprite getSprite() {

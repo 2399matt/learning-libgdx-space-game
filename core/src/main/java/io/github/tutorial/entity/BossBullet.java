@@ -1,10 +1,11 @@
 package io.github.tutorial.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
-public class BossBullet implements Entity {
+public class BossBullet implements Entity, Renderable {
 
     private final float SPEED = 4f;
     private Sprite sprite;
@@ -17,6 +18,11 @@ public class BossBullet implements Entity {
 
     public void update(float delta) {
         sprite.translateY(-SPEED * delta);
+    }
+
+    @Override
+    public void render(Batch batch) {
+        sprite.draw(batch);
     }
 
     public Sprite getSprite() {

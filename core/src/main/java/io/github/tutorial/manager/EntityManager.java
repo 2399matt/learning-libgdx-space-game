@@ -53,7 +53,7 @@ public class EntityManager {
         shipBulletPool = new ShipBulletPool(atlas);
         enemyPool = new EnemyPool(atlas);
         gridManager = new GridManager(false);
-        this.ship = new Ship(atlas);
+        this.ship = new Ship();
         oof = Gdx.audio.newSound(Gdx.files.internal("oof.mp3"));
         laserSound = Gdx.audio.newSound(Gdx.files.internal("laser.mp3"));
         shapeRenderer = new ShapeRenderer();
@@ -136,24 +136,25 @@ public class EntityManager {
     }
 
     public void drawAll(Batch batch, float globalTimer, BitmapFont font, float delta) {
-        ship.getSprite().draw(batch);
+        ship.render(batch, delta);
         font.draw(batch, "CURRENT SCORE: " + Main.playerScore, 15, 9);
         for (Asteroid asteroid : asteroids) {
-            asteroid.getSprite().draw(batch);
+            asteroid.render(batch);
         }
         for (ShipBullet b : shipBullets) {
-            b.getSprite().draw(batch);
+            b.render(batch);
         }
         for (EnemyBullet b : enemyBullets) {
-            b.getSprite().draw(batch);
+            b.render(batch);
         }
         for (Enemy e : enemies) {
-            e.getSprite().draw(batch);
+            e.render(batch);
         }
         for (int i = explosions.size - 1; i >= 0; i--) {
             Explosion e = explosions.get(i);
-            e.getSprite().draw(batch);
             e.update(delta);
+            System.out.println("Explosion at " + e.getX() + "," + e.getY() + " finished: " + e.isFinished());
+            e.render(batch, delta);
             if (e.isFinished()) {
                 explosions.removeIndex(i);
             }
@@ -245,7 +246,7 @@ public class EntityManager {
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.RED);
-        shapeRenderer.rect(ship.getSprite().getX(), ship.getSprite().getY(), ship.getSprite().getWidth(), ship.getSprite().getHeight());
+        shapeRenderer.rect(ship.getX(), ship.getY(), 1f, 1f);
         shapeRenderer.setColor(Color.GREEN);
         for (Asteroid a : asteroids) {
             Sprite asteroid = a.getSprite();

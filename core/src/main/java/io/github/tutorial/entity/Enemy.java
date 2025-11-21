@@ -1,10 +1,11 @@
 package io.github.tutorial.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Enemy implements Entity {
+public class Enemy implements Entity, Renderable {
 
     public float bulletCooldown;
     private Sprite sprite;
@@ -52,6 +53,11 @@ public class Enemy implements Entity {
             isLeft = !isLeft;
             moveTimer = 0f;
         }
+    }
+
+    @Override
+    public void render(Batch batch) {
+        sprite.draw(batch);
     }
 
     public void takeDamage() {

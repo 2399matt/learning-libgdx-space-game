@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 import io.github.tutorial.Main;
+import io.github.tutorial.entity.Ship;
 import io.github.tutorial.manager.EntityManager;
 
 
@@ -17,11 +18,11 @@ import io.github.tutorial.manager.EntityManager;
 public class GameScreen implements Screen {
 
     public final Main game;
-    public EntityManager entityManager;
-    public float globalTimer;
     private final TextureRegion background;
     private final TextureRegion lives;
     private final TextureAtlas atlas;
+    public EntityManager entityManager;
+    public float globalTimer;
 
 
     public GameScreen(Main game, TextureAtlas atlas) {
@@ -46,16 +47,21 @@ public class GameScreen implements Screen {
     }
 
     public void input(float delta) {
+        boolean moving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            moving = true;
             entityManager.getShip().moveUp(delta);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            moving = true;
             entityManager.getShip().moveDown(delta);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            moving = true;
             entityManager.getShip().moveLeft(delta);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            moving = true;
             entityManager.getShip().moveRight(delta);
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
@@ -63,6 +69,12 @@ public class GameScreen implements Screen {
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             entityManager.createBullet();
+        }
+
+        if (moving) {
+            entityManager.getShip().setState(Ship.State.MOVING);
+        } else {
+            entityManager.getShip().setState(Ship.State.IDLE);
         }
     }
 

@@ -1,12 +1,13 @@
 package io.github.tutorial.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class Boss implements Entity {
+public class Boss implements Entity, Renderable {
 
     private float health;
 
@@ -57,6 +58,11 @@ public class Boss implements Entity {
                 setLeft(true);
             }
         }
+    }
+
+    @Override
+    public void render(Batch batch) {
+        sprite.draw(batch);
     }
 
     public void takeDamage() {
