@@ -65,10 +65,6 @@ public class Asset {
         texture = null;
     }
 
-    public static TextureAtlas getAtlas() {
-        return atlas;
-    }
-
     public static TextureRegion getBulletTexture() {
         return atlas.findRegion("laser");
     }
@@ -107,6 +103,10 @@ public class Asset {
 
     public static Music getNormMusic() {
         return manager.get("norm_music.mp3", Music.class);
+    }
+
+    public static TextureRegion getBackgroundTexture() {
+        return atlas.findRegion("background2");
     }
 
     public static void dispose() {

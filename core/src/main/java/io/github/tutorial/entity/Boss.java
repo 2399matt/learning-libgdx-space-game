@@ -1,29 +1,24 @@
 package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import io.github.tutorial.Asset;
 
-public class Boss implements Entity, Renderable {
+public class Boss extends Entity implements Renderable {
 
+    private static final Vector2 size = new Vector2(4f, 3f);
+    private static final TextureRegion TEXTURE = Asset.getBossTexture();
     private float health;
-
     private boolean isLeft;
-
-    private Sprite sprite;
-
     private float homeX;
-
     private boolean isVulnerable;
 
-    public Boss(TextureAtlas atlas) {
-        setSprite(new Sprite(atlas.findRegion("boss")));
-        getSprite().setPosition(7f, 4f);
-        setHomeX(getSprite().getX());
-        getSprite().setSize(4f, 3f);
+    public Boss() {
+        super(7f, 4f);
+        homeX = getPosition().x;
         setHealth(100);
         setLeft(false);
         setVulnerable(true);
@@ -31,38 +26,44 @@ public class Boss implements Entity, Renderable {
 
     public void moveUp(float delta) {
         setVulnerable(false);
-        getSprite().translateY(3f * delta);
+        getPosition().y += 3f * delta;
     }
 
     public void moveDown(float delta) {
         setVulnerable(true);
-        getSprite().translateY(-1f * delta);
+        getPosition().y -= delta;
     }
 
     public void clampBoss(FitViewport viewport) {
-        getSprite().setX(MathUtils.clamp(getSprite().getX(), 0f, viewport.getWorldWidth() - getSprite().getWidth()));
-        getSprite().setY(MathUtils.clamp(getSprite().getY(), 0f, viewport.getWorldHeight() - getSprite().getHeight()));
+        getPosition().x = MathUtils.clamp(getPosition().x, 0f, viewport.getWorldWidth() - size.x);
+        getPosition().y = MathUtils.clamp(getPosition().y, 0f, viewport.getWorldHeight() - size.y);
     }
 
+    @Override
     public void update(float delta) {
         if (isLeft()) {
-            getSprite().translateX(-3f * delta);
-            if (getSprite().getX() <= getHomeX() - 3f) {
-                getSprite().setX(getHomeX() - 3f);
+            getPosition().x -= 3f * delta;
+            if (getPosition().x <= getHomeX() - 3f) {
+                getPosition().x = homeX - 3f;
                 setLeft(false);
             }
         } else {
-            getSprite().translateX(3f * delta);
-            if (getSprite().getX() >= getHomeX() + 3f) {
-                getSprite().setX(getHomeX() + 3f);
+            getPosition().x += 3f * delta;
+            if (getPosition().x >= getHomeX() + 3f) {
+                getPosition().x = getHomeX() + 3f;
                 setLeft(true);
             }
         }
     }
 
     @Override
+    public Vector2 getSize() {
+        return size;
+    }
+
+    @Override
     public void render(Batch batch) {
-        sprite.draw(batch);
+        batch.draw(TEXTURE, getPosition().x, getPosition().y, size.x, size.y);
     }
 
     public void takeDamage() {
@@ -91,14 +92,6 @@ public class Boss implements Entity, Renderable {
         isLeft = left;
     }
 
-    public Sprite getSprite() {
-        return sprite;
-    }
-
-    public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
-    }
-
     public float getHomeX() {
         return homeX;
     }
@@ -115,17 +108,4 @@ public class Boss implements Entity, Renderable {
         isVulnerable = vulnerable;
     }
 
-    @Override
-    public float getX() {
-        return sprite.getX();
-    }
-
-    @Override
-    public float getY() {
-        return sprite.getY();
-    }
-
-    public Rectangle getHitBox() {
-        return sprite.getBoundingRectangle();
-    }
 }

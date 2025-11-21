@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
+import io.github.tutorial.Asset;
 import io.github.tutorial.Main;
 import io.github.tutorial.entity.Ship;
 import io.github.tutorial.manager.EntityManager;
@@ -20,16 +20,14 @@ public class GameScreen implements Screen {
     public final Main game;
     private final TextureRegion background;
     private final TextureRegion lives;
-    private final TextureAtlas atlas;
     public EntityManager entityManager;
     public float globalTimer;
 
 
-    public GameScreen(Main game, TextureAtlas atlas) {
-        entityManager = new EntityManager(atlas);
-        lives = atlas.findRegion("heart");
-        background = atlas.findRegion("background2");
-        this.atlas = atlas;
+    public GameScreen(Main game) {
+        entityManager = new EntityManager();
+        lives = Asset.getHeartTexture();
+        background = Asset.getBackgroundTexture();
         this.game = game;
         globalTimer = 0f;
     }
@@ -80,12 +78,12 @@ public class GameScreen implements Screen {
 
     public void logic(float delta) {
         if (!entityManager.getShip().isAlive()) {
-            game.setScreen(new DeathScreen(game, atlas));
+            game.setScreen(new DeathScreen(game));
             this.dispose();
             return;
         }
         if (globalTimer >= 12) {
-            game.setScreen(new BossScreen(game, entityManager.getShip(), atlas));
+            game.setScreen(new BossScreen(game, entityManager.getShip()));
             this.dispose();
             return;
         }

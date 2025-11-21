@@ -3,7 +3,6 @@ package io.github.tutorial.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -19,11 +18,9 @@ public class DeathScreen implements Screen {
 
     private final Main game;
     private final Stage stage;
-    private final TextureAtlas atlas;
 
-    public DeathScreen(Main game, TextureAtlas atlas) {
+    public DeathScreen(Main game) {
         this.game = game;
-        this.atlas = atlas;
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
     }
@@ -67,7 +64,7 @@ public class DeathScreen implements Screen {
     }
 
     private void changeScreen() {
-        game.setScreen(new GameScreen(game, atlas));
+        game.setScreen(new GameScreen(game));
     }
 
 
