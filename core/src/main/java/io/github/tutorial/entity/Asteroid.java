@@ -1,10 +1,11 @@
 package io.github.tutorial.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 
-public class Asteroid implements Entity {
+public class Asteroid implements Entity, Renderable {
 
     private static final float ASTEROID_SPEED = 4f;
 
@@ -23,6 +24,11 @@ public class Asteroid implements Entity {
         sprite.setSize(0.5f, 0.5f);
         sprite.setPosition(x, y);
         timesHit = 0;
+    }
+
+    @Override
+    public void render(Batch batch) {
+        sprite.draw(batch);
     }
 
     public void update(float delta) {

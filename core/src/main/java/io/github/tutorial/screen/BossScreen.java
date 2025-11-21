@@ -20,15 +20,13 @@ public class BossScreen implements Screen {
     public final Main game;
 
     private final TextureAtlas atlas;
-    public float globalTimer;
-    public BossEntityManager manager;
     private final TextureRegion background;
     private final TextureRegion lives;
     private final Stage stage;
-
     private final ProgressBar progressBar;
-
     private final Skin skin;
+    public float globalTimer;
+    public BossEntityManager manager;
 
     public BossScreen(Main game, Ship ship, TextureAtlas atlas) {
         this.game = game;
@@ -59,20 +57,30 @@ public class BossScreen implements Screen {
 
     public void input() {
         float delta = Gdx.graphics.getDeltaTime();
+        boolean moving = false;
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
             manager.getShip().moveUp(delta);
+            moving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             manager.getShip().moveDown(delta);
+            moving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             manager.getShip().moveLeft(delta);
+            moving = true;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             manager.getShip().moveRight(delta);
+            moving = true;
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             manager.createBullet();
+        }
+        if (moving) {
+            manager.getShip().setState(Ship.State.MOVING);
+        } else {
+            manager.getShip().setState(Ship.State.IDLE);
         }
     }
 
@@ -85,7 +93,7 @@ public class BossScreen implements Screen {
         game.batch.begin();
         short lives = (short) manager.getShip().getLives();
         game.batch.draw(background, 0, 0, game.viewport.getWorldWidth(), game.viewport.getWorldHeight());
-        manager.drawAll(game.batch);
+        manager.drawAll(game.batch, Gdx.graphics.getDeltaTime());
         for (int i = 0; i < lives; i++) {
             game.batch.draw(this.lives, i * .5f, game.viewport.getWorldHeight() - 0.5f, 0.3f, 0.3f);
         }
@@ -98,6 +106,7 @@ public class BossScreen implements Screen {
         if (!manager.getShip().isAlive()) {
             game.setScreen(new DeathScreen(game, atlas));
             this.dispose();
+
             return;
         }
         if (!manager.getBoss().isAlive()) {

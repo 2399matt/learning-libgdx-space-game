@@ -42,9 +42,8 @@ public class BossEntityManager {
         music.play();
     }
 
-    public void drawAll(Batch batch) {
-        //font.draw(batch, "CURRENT SCORE: " + Main.playerScore, 15, 9);
-        ship.getSprite().draw(batch);
+    public void drawAll(Batch batch, float delta) {
+        ship.render(batch, delta);
         boss.getSprite().draw(batch);
         for (ShipBullet b : shipBullets) {
             b.getSprite().draw(batch);
@@ -53,7 +52,7 @@ public class BossEntityManager {
             b.getSprite().draw(batch);
         }
         for (Explosion e : explosions) {
-            e.getSprite().draw(batch);
+            e.render(batch, delta);
         }
     }
 
@@ -161,7 +160,7 @@ public class BossEntityManager {
     }
 
     public void createBullet() {
-        ShipBullet shipBullet = new ShipBullet(ship.getSprite().getX(), ship.getSprite().getY() + 1, atlas);
+        ShipBullet shipBullet = new ShipBullet(ship.getX(), ship.getY() + 1f, atlas);
         shipBullets.add(shipBullet);
         laserSound.play(0.1f);
     }

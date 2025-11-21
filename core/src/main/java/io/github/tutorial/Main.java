@@ -19,11 +19,15 @@ public class Main extends Game {
     public BitmapFont font;
     public TextureAtlas textureAtlas;
 
+    // TODO Create a loading screen class and an static Asset class
+    // TODO Loading screen will call load() to load all static assets, then finish loading (which will include an init method for hte animations)
+    // TODO THEN go to game.
     @Override
     public void create() {
         viewport = new FitViewport(16, 9);
         batch = new SpriteBatch();
         font = new BitmapFont(Gdx.files.internal("white.fnt"), false);
+        //TODO: Change atlas to point to new one with animation
         textureAtlas = new TextureAtlas("atlas/sprite.atlas");
         setScreen(new GameScreen(this, textureAtlas));
     }
