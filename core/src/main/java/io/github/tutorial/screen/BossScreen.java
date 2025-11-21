@@ -4,13 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import io.github.tutorial.Asset;
 import io.github.tutorial.Main;
 import io.github.tutorial.entity.Ship;
 import io.github.tutorial.manager.BossEntityManager;
@@ -19,7 +19,6 @@ public class BossScreen implements Screen {
 
     public final Main game;
 
-    private final TextureAtlas atlas;
     private final TextureRegion background;
     private final TextureRegion lives;
     private final Stage stage;
@@ -28,13 +27,12 @@ public class BossScreen implements Screen {
     public float globalTimer;
     public BossEntityManager manager;
 
-    public BossScreen(Main game, Ship ship, TextureAtlas atlas) {
+    public BossScreen(Main game, Ship ship) {
         this.game = game;
-        this.atlas = atlas;
-        background = atlas.findRegion("background2");
-        lives = atlas.findRegion("heart");
+        background = Asset.getBackgroundTexture();
+        lives = Asset.getHeartTexture();
         globalTimer = 0f;
-        manager = new BossEntityManager(ship, atlas);
+        manager = new BossEntityManager(ship);
         stage = new Stage(new ScreenViewport());
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         progressBar = new ProgressBar(0, 100, 1, false, skin);
@@ -104,13 +102,13 @@ public class BossScreen implements Screen {
 
     public void logic() {
         if (!manager.getShip().isAlive()) {
-            game.setScreen(new DeathScreen(game, atlas));
+            game.setScreen(new DeathScreen(game));
             this.dispose();
 
             return;
         }
         if (!manager.getBoss().isAlive()) {
-            game.setScreen(new DeathScreen(game, atlas));
+            game.setScreen(new DeathScreen(game));
             this.dispose();
             return;
         }

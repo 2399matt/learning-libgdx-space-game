@@ -1,62 +1,48 @@
 package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import io.github.tutorial.Asset;
 
-public class ShipBullet implements Entity, Renderable {
+public class ShipBullet extends Entity implements Renderable {
 
-    private Sprite sprite;
+    private static final TextureRegion TEXTURE = Asset.getBulletTexture();
+    private static final Vector2 size = new Vector2(0.3f, 0.3f);
 
-
-    public ShipBullet(float x, float y, TextureAtlas atlas) {
-        sprite = new Sprite(atlas.findRegion("laser"));
-        sprite.setSize(0.3f, 0.3f);
-        sprite.setPosition(x, y);
+    public ShipBullet(float x, float y) {
+        super(x, y);
     }
 
-    public ShipBullet(TextureAtlas atlas) {
-        sprite = new Sprite(atlas.findRegion("laser"));
-        sprite.setSize(0.3f, 0.3f);
+    public ShipBullet() {
+        super();
     }
 
     public static void dispose() {
 
     }
 
+    public void reset() {
+        getPosition().set(0f,0f);
+    }
+
     public void init(float x, float y) {
-        sprite.setPosition(x, y);
+        getPosition().set(x, y);
     }
 
-    public Rectangle getHitBox() {
-        return sprite.getBoundingRectangle();
-    }
-
+    @Override
     public void update(float delta) {
-        sprite.translateY(5f * delta);
+        getPosition().y += 5f * delta;
     }
 
     @Override
     public void render(Batch batch) {
-        sprite.draw(batch);
-    }
-
-    public Sprite getSprite() {
-        return sprite;
-    }
-
-    public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
+        batch.draw(TEXTURE, getPosition().x, getPosition().y,  size.x, size.y);
     }
 
     @Override
-    public float getX() {
-        return sprite.getX();
+    public Vector2 getSize() {
+        return size;
     }
 
-    @Override
-    public float getY() {
-        return sprite.getY();
-    }
 }

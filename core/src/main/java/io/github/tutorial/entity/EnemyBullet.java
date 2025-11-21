@@ -1,44 +1,40 @@
 package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import io.github.tutorial.Asset;
 
-public class EnemyBullet implements Entity, Renderable {
+public class EnemyBullet extends Entity implements Renderable {
 
-    private final float BULLET_SPEED = 3f;
-
-    private Sprite sprite;
+    private static final TextureRegion TEXTURE = Asset.getBulletTexture();
+    private static final float BULLET_SPEED = 3f;
+    private static final Vector2 size = new Vector2(0.3f, 0.3f);
 
     private float targetX, targetY, vx, vy;
 
-    public EnemyBullet(TextureAtlas atlas) {
-        sprite = new Sprite(atlas.findRegion("laser"));
-        sprite.setSize(0.3f, 0.3f);
+    public EnemyBullet() {
+        super();
     }
 
-    public EnemyBullet(float x, float y, float targetX, float targetY, TextureAtlas atlas) {
-        sprite = new Sprite(atlas.findRegion("laser"));
-        sprite.setSize(0.3f, 0.3f);
-        sprite.setPosition(x, y);
-        sprite.setOriginCenter();
+    public EnemyBullet(float x, float y, float targetX, float targetY) {
+        super(x,y);
         this.targetX = targetX;
         this.targetY = targetY;
-        float dx = targetX - sprite.getX();
-        float dy = targetY - sprite.getY();
+        float dx = targetX - getPosition().x;
+        float dy = targetY - getPosition().y;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
         vx = (dx / length) * BULLET_SPEED;
         vy = (dy / length) * BULLET_SPEED;
     }
 
     public void init(float x, float y, float targetX, float targetY) {
-        sprite.setPosition(x, y);
-        sprite.setOriginCenter();
+        getPosition().set(x,y);
         this.targetX = targetX;
         this.targetY = targetY;
-        float dx = targetX - sprite.getX();
-        float dy = targetY - sprite.getY();
+        float dx = targetX - getPosition().x;
+        float dy = targetY - getPosition().y;
         float length = (float) Math.sqrt(dx * dx + dy * dy);
         vx = (dx / length) * BULLET_SPEED;
         vy = (dy / length) * BULLET_SPEED;
@@ -50,35 +46,19 @@ public class EnemyBullet implements Entity, Renderable {
         targetY = 0f;
     }
 
-    public Rectangle getHitBox() {
-        return sprite.getBoundingRectangle();
-    }
-
+    @Override
     public void update(float delta) {
-        sprite.translateY(vy * delta);
-        sprite.translateX(vx * delta);
+        getPosition().set(getPosition().x + vx * delta, getPosition().y + vy * delta);
     }
 
     @Override
     public void render(Batch batch) {
-        sprite.draw(batch);
-    }
-
-    public Sprite getSprite() {
-        return sprite;
-    }
-
-    public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
+        batch.draw(TEXTURE, getPosition().x, getPosition().y, size.x, size.y);
     }
 
     @Override
-    public float getX() {
-        return sprite.getX();
+    public Vector2 getSize() {
+        return size;
     }
 
-    @Override
-    public float getY() {
-        return sprite.getY();
-    }
 }

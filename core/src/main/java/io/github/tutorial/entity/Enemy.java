@@ -1,38 +1,35 @@
 package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import io.github.tutorial.Asset;
 
-public class Enemy implements Entity, Renderable {
+public class Enemy extends Entity implements Renderable {
 
+    private static final TextureRegion TEXTURE = Asset.getEnemyTexture();
+    private static final Vector2 size = new Vector2(0.5f, 0.5f);
     public float bulletCooldown;
-    private Sprite sprite;
     private boolean isLeft;
-
     private float timesHit;
-
     private float moveTimer;
 
-    public Enemy(TextureAtlas atlas) {
-        this.sprite = new Sprite(atlas.findRegion("enemy"));
-        sprite.setSize(0.5f, 0.5f);
+    public Enemy() {
+        super();
         bulletCooldown = 2f;
         moveTimer = 0f;
         isLeft = true;
     }
 
-    public Enemy(float x, float y, TextureAtlas atlas) {
-        this.sprite = new Sprite(atlas.findRegion("enemy"));
-        sprite.setSize(0.5f, 0.5f);
-        sprite.setPosition(x, y);
+    public Enemy(float x, float y) {
+        super(x,y);
         moveTimer = 0f;
         bulletCooldown = 2f;
     }
 
     public void init(float x, float y) {
-        sprite.setPosition(x, y);
+        //sprite.setPosition(x, y);
+        getPosition().set(x,y);
     }
 
     public void reset() {
@@ -45,9 +42,9 @@ public class Enemy implements Entity, Renderable {
         bulletCooldown -= delta;
         moveTimer += delta;
         if (isLeft) {
-            sprite.translateX(2f * delta);
+            getPosition().x += 2f * delta;
         } else {
-            sprite.translateX(-2f * delta);
+            getPosition().x -= 2f * delta;
         }
         if (moveTimer > 1f) {
             isLeft = !isLeft;
@@ -57,23 +54,16 @@ public class Enemy implements Entity, Renderable {
 
     @Override
     public void render(Batch batch) {
-        sprite.draw(batch);
+        batch.draw(TEXTURE, getPosition().x, getPosition().y, size.x, size.y);
+    }
+
+    @Override
+    public Vector2 getSize() {
+        return size;
     }
 
     public void takeDamage() {
         timesHit++;
-    }
-
-    public Rectangle getHitBox() {
-        return sprite.getBoundingRectangle();
-    }
-
-    public Sprite getSprite() {
-        return sprite;
-    }
-
-    public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
     }
 
     public float getTimesHit() {
@@ -84,13 +74,4 @@ public class Enemy implements Entity, Renderable {
         this.timesHit = timesHit;
     }
 
-    @Override
-    public float getX() {
-        return sprite.getX();
-    }
-
-    @Override
-    public float getY() {
-        return sprite.getY();
-    }
 }

@@ -1,58 +1,48 @@
 package io.github.tutorial.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import io.github.tutorial.Asset;
 
-public class Asteroid implements Entity, Renderable {
+public class Asteroid extends Entity implements Renderable {
 
     private static final float ASTEROID_SPEED = 4f;
-
-    private Sprite sprite;
-
+    private static final TextureRegion TEXTURE = Asset.getAsteroidTexture();
+    private static final Vector2 size = new Vector2(0.5f, 0.5f);
     private float timesHit;
 
-    public Asteroid(TextureAtlas atlas) {
-        sprite = new Sprite(atlas.findRegion("asteroid2"));
-        sprite.setSize(0.5f, 0.5f);
+    public Asteroid() {
+        super();
         timesHit = 0;
     }
 
-    public Asteroid(float x, float y, TextureAtlas atlas) {
-        sprite = new Sprite(atlas.findRegion("asteroid2"));
-        sprite.setSize(0.5f, 0.5f);
-        sprite.setPosition(x, y);
+    public Asteroid(float x, float y) {
+        super(x,y);
         timesHit = 0;
     }
 
     @Override
     public void render(Batch batch) {
-        sprite.draw(batch);
+        batch.draw(TEXTURE, getPosition().x, getPosition().y, size.x, size.y);
     }
 
+    @Override
+    public Vector2 getSize() {
+        return size;
+    }
+
+    @Override
     public void update(float delta) {
-        sprite.translateY(-ASTEROID_SPEED * delta);
+        getPosition().y = getPosition().y + -ASTEROID_SPEED * delta;
     }
 
     public void init(float x, float y) {
-        sprite.setPosition(x, y);
+        getPosition().set(x,y);
     }
 
     public void reset() {
         timesHit = 0;
-    }
-
-    public Rectangle getHitBox() {
-        return sprite.getBoundingRectangle();
-    }
-
-    public Sprite getSprite() {
-        return sprite;
-    }
-
-    public void setSprite(Sprite sprite) {
-        this.sprite = sprite;
     }
 
     public float getTimesHit() {
@@ -61,15 +51,5 @@ public class Asteroid implements Entity, Renderable {
 
     public void setTimesHit(float timesHit) {
         this.timesHit = timesHit;
-    }
-
-    @Override
-    public float getX() {
-        return sprite.getX();
-    }
-
-    @Override
-    public float getY() {
-        return sprite.getY();
     }
 }
